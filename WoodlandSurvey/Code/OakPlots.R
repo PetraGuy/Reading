@@ -63,8 +63,6 @@ w10w16wide$site =  as.numeric(as.character(w10w16wide$site))
 #add other details to wide, long lat, aw site name, alt, area
 
 
-
-
 #add locs to this 
 alloaklocs = inner_join(w10w16wide,longlat, by  = "site")
 
@@ -100,6 +98,7 @@ write.csv(w10w16wide4,"../Data/oakplots.csv")
 oaksites= readRDS("../Data/oaksitesdf.RDS")
 #create map
 
+scot = Oaksites%>%filter(long>56)
 
 UK <- map_data(map = "world", region = "UK") # changed map to "world"
 ggplot(data = UK, aes(x = long, y = lat, group = group)) + 
@@ -107,9 +106,9 @@ ggplot(data = UK, aes(x = long, y = lat, group = group)) +
   scale_x_continuous(breaks = c(-6,-5,-4,-3,-2,-1,0,1))+
   scale_y_continuous(breaks = c(50,51,52,53,54,55,56,57,58),limits = c(50,58))+
   coord_map()+
-  geom_point(data = oaksites, mapping = aes(x = lat, y = long),
+  geom_point(data = scot, mapping = aes(x = lat, y = long),
              inherit.aes = FALSE)+
-  geom_text_repel(data = oaksites, aes(x = lat, y = long,label = site), 
+  geom_text_repel(data = scot, aes(x = lat, y = long,label = site), 
             inherit.aes = FALSE, size = 2, hjust = 0.5, vjust = 0.5)+
   theme(plot.margin=unit(c(0,0,0,0),"mm"))
   
