@@ -24,3 +24,4 @@ boxplot = ggplot(data, aes(x = Site, y = normalised_wt))+
 #look at some clustering, but use a gower distance for categoricals - type and soil
 library(cluster)
 gower_distance = daisy(woods[,c])
+
