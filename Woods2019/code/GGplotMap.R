@@ -1,5 +1,5 @@
 # plot a map
-setwd("C:/dev/code/Woods2019/code")
+setwd("C:/dev/code/Reading/Woods2019/code")
 
 #create map
 library(dplyr)

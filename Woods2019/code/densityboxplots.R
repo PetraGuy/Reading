@@ -5,7 +5,7 @@ library(ggplot2)
 library(dplyr)
 library(tidyr)
 library(data.table)
-data = read.csv("../Data/soil_density.csv", header = TRUE, stringsAsFactors = FALSE)
+data = read.csv("../data/soil_density.csv", header = TRUE, stringsAsFactors = FALSE)
                 
 
 #grouped by Site or soil
