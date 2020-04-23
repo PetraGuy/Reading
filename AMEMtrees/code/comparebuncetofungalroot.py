@@ -8,8 +8,20 @@ Comparing species in Bunce with Fungal Root
 
 import pandas as pd
 
-bunce = pd.read_csv("../data/TreesInBunce.csv")
-fungalroot = pd.read_csv("../data/FungalRoot.csv")
+bnc = pd.read_csv("../data/TreesInBunce.csv")# change this if you want by hand trees or from dbh
+fr = pd.read_csv("../data/FungalRoot.csv")
 
-bunceinfungalroot = pd.merge(fungalroot,bunce, on = 'species', how = 'right')
-bunceinfungalroot_woduplicates = bunceinfungalroot.drop_duplicates()
+bnc_in_fr = pd.merge(fr,bnc, on = 'species', how = 'right')
+bnc_in_fr_wodups = bnc_in_fr.drop_duplicates()
+
+#repeated rows for same species with different mycor status, so make wide so you can see
+#how many actual species are in there
+bnc_in_fr_wodups_wide = bnc_in_fr_wodups.pivot(index='species', columns='status',values = 'status')
+
+#some of the rows are all nan
+bnc_in_fr_wodups_wide.dropna(axis = 0, how = 'all', inplace = True)
+
+#now you can see there are 82 species in FungalRoot that occur in Bunce, 
+#and I could use Fungal Root references
+
+bnc_in_fr_wodups_wide_wonan.to_csv('../data/BunceInFungalRoot.csv')

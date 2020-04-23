@@ -1,0 +1,83 @@
+species,,AM,EcM,"EcM,AM",ErM,non-AM,non-EcM,non-mycorrhizal (checked for all types)
+Abies alba,,,EcM,,,,,
+Abies grandis,,,EcM,,,,,
+Abies procera,,,EcM,,,,,
+Acacia melanoxylon,,,EcM,"EcM,AM",,,non-EcM,
+Acacia retinodes,,,EcM,,,,non-EcM,
+Acer campestre,,AM,EcM,,,,,non-mycorrhizal (checked for all types)
+Acer platanoides,,AM,EcM,,,,non-EcM,non-mycorrhizal (checked for all types)
+Aesculus hippocastanum,,AM,,,,,non-EcM,non-mycorrhizal (checked for all types)
+Alnus glutinosa,,AM,EcM,"EcM,AM",,,,non-mycorrhizal (checked for all types)
+Alnus incana,,AM,EcM,,,non-AM,,non-mycorrhizal (checked for all types)
+Betula nana,,,EcM,,,non-AM,,
+Betula pendula,,AM,EcM,,,,,
+Carpinus betulus,,,EcM,,,,,
+Castanea sativa,,AM,EcM,,,,,
+Chamaecyparis lawsoniana,,AM,,,,,non-EcM,
+Corylus avellana,,AM,EcM,,,,,
+Crataegus laevigata,,AM,EcM,,,,,
+Crataegus monogyna,,AM,EcM,"EcM,AM",,,,
+Cryptomeria japonica,,AM,EcM,,,,,
+Cupressus macrocarpa,,AM,,,,,,
+Euonymus europaeus,,AM,,,,,,
+Fagus sylvatica,,,EcM,,,,,
+Fraxinus excelsior,,AM,EcM,,,,non-EcM,non-mycorrhizal (checked for all types)
+Ilex aquifolium,,AM,EcM,,,,,
+Juniperus communis,,AM,EcM,,,non-AM,non-EcM,
+Laburnum anagyroides,,AM,,,,,,
+Larix kaempferi,,AM,EcM,,,,,non-mycorrhizal (checked for all types)
+Laurus nobilis,,AM,,,,,,
+Malus domestica,,AM,,,,,,
+Malus sylvestris,,AM,EcM,,,,,
+Picea abies,,,EcM,,,,,
+Pinus contorta,,,EcM,,,,,
+Pinus pinaster,,AM,EcM,,,,,
+Pinus radiata,,,EcM,,,,,
+Pinus sylvestris,,AM,EcM,"EcM,AM",,non-AM,,non-mycorrhizal (checked for all types)
+Populus alba,,AM,EcM,"EcM,AM",,,,non-mycorrhizal (checked for all types)
+Populus canescens,,,EcM,"EcM,AM",,,,
+Populus nigra,,AM,EcM,"EcM,AM",,,,
+Populus tremuloides,,AM,EcM,"EcM,AM",,,,
+Prunus avium,,AM,EcM,,,,,non-mycorrhizal (checked for all types)
+Prunus cerasifera,,AM,EcM,,,,,
+Prunus cerasus,,,EcM,,,,,
+Prunus domestica,,AM,,,,,,non-mycorrhizal (checked for all types)
+Prunus laurocerasus,,,EcM,,,,,
+Prunus padus,,AM,EcM,"EcM,AM",,,non-EcM,
+Prunus spinosa,,AM,EcM,,,,non-EcM,non-mycorrhizal (checked for all types)
+Pseudotsuga menziesii,,AM,EcM,"EcM,AM",,,,
+Quercus ilex,,,EcM,,,,,
+Quercus palustris,,,EcM,,,,,
+Quercus robur,,,EcM,,,,non-EcM,
+Rhamnus cathartica,,AM,,,,,non-EcM,non-mycorrhizal (checked for all types)
+Rhododendron luteum,,,,,ErM,,,
+Robinia pseudoacacia,,AM,EcM,"EcM,AM",,,non-EcM,non-mycorrhizal (checked for all types)
+Salix alba,,AM,EcM,,,,non-EcM,
+Salix arbuscula,,,EcM,,,,,
+Salix aurita,,,EcM,,,,,non-mycorrhizal (checked for all types)
+Salix caprea,,AM,EcM,,,,,non-mycorrhizal (checked for all types)
+Salix cinerea,,AM,EcM,,,,,
+Salix fragilis,,,EcM,,,,,
+Salix herbacea,,,EcM,"EcM,AM",,non-AM,,
+Salix lapponum,,,EcM,,,,,
+Salix myrsinites,,,EcM,"EcM,AM",,non-AM,,
+Salix pentandra,,AM,EcM,,,,non-EcM,
+Salix phylicifolia,,,EcM,"EcM,AM",,,,
+Salix purpurea,,AM,EcM,,,,non-EcM,non-mycorrhizal (checked for all types)
+Salix repens,,AM,EcM,,,,,
+Salix reticulata,,,EcM,"EcM,AM",,non-AM,,
+Salix viminalis,,AM,EcM,,,,,
+Sambucus nigra,,AM,,,,,non-EcM,non-mycorrhizal (checked for all types)
+Sambucus racemosa,,AM,,"EcM,AM",,,,
+Sequoia sempervirens,,AM,,,,,non-EcM,
+Sorbus aria,,AM,,,,,,non-mycorrhizal (checked for all types)
+Sorbus aucuparia,,AM,EcM,,,,non-EcM,non-mycorrhizal (checked for all types)
+Sorbus intermedia,,AM,,,,,non-EcM,
+Sorbus torminalis,,,EcM,,,,,
+Tamarix gallica,,AM,,,,,,
+Thuja plicata,,AM,,,,,,
+Tilia cordata,,AM,EcM,,,,,non-mycorrhizal (checked for all types)
+Tilia platyphyllos,,,EcM,,,,,
+Tsuga heterophylla,,,EcM,"EcM,AM",,,,
+Ulmus glabra,,AM,,,,,non-EcM,
+Ulmus minor,,AM,EcM,,,,,
