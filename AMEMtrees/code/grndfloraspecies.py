@@ -9,27 +9,53 @@ Get list of herbaceous species in Bunce
 #like brambles
 import pandas as pd
 
-BRC = pd.read_csv('../data/BRCCodes.csv')
+# get the two data files
+BRC = pd.read_csv('../data/specieslibraryfull.csv')
 grndflora = pd.read_csv('../data/GroundFlora.csv')
 
-grndflora.fillna(0, inplace =True) #d
-grndflora = grndflora.astype('int64')
+#rename cols so can join later
+BRC.rename(columns = {'BRC number': 'BRC'}, inplace = True)
 
- #just take out species for now, dont need site,plot, nest, cover
- 
-justflora = grndflora[['AmalgamsYr1','AmalgamsYr2']]
+#NB there are no duplicates in BRC
+names = BRC.BRC.value_counts()
 
-#make long
-df1 = pd.DataFrame(justflora['AmalgamsYr1'])
-df2 = pd.DataFrame(justflora['AmalgamsYr2'])
-justfloralong = pd.concat([df1,df2], ignore_index = True)
+#note - although eng notation, if you extract a value it is correct, so
+#920189e6 = 9201892, so there aren't duplicates where it looks like
+#thre are lots of values of 920189e6
 
- #get rid of emty second column
- del justfloralong['AmalgamsYr2']
- 
- #now delete duplicates in amalgams
- flora = justfloralong.drop_duplicates('AmalgamsYr1')
- flora.columns =['BRC number']
- 
- #now merge with BRC codes to get names of the flora
-floraspieces = pd.merge(BRC,flora, on = 'BRC number', how = 'right')
+
+
+# need to make long by year, so have amalgam/year 
+#not sure why I need this, but couldn't just use i = index without it
+grndflora['Index'] = grndflora.index 
+grndlong = pd.wide_to_long(grndflora, ["Cover", "Amalgams"], i='Index', j="year", sep = 'Yr')
+
+#year is an index not a column, this fixes that.
+grndlong.reset_index(inplace=True)
+grndlong.drop("Index",axis=1,inplace=True)
+
+#rename cols so can join
+grndlong.rename(columns = {'Amalgams': 'BRC'}, inplace = True)
+
+#there are some duplicates because when a there were more species in one year 
+#than the other, then a species name was just repeated, so looks like
+#acer x 6 entries for site 1 plot 1 nest 1 because there are 6 species
+#in next year in site 1 plot 1 nest 1. So remove duplicate rows
+#but in other cases it looks like just blanks were left. 
+#So need to remove empty lines without amalgams AND delete duplicate amalgams
+
+#if nan in BRC, delete that row
+grndlong = grndlong.dropna()
+
+#drop any rows where BRC duplicated - if in same site/plot/nest
+grndlong = grndlong.drop_duplicates(['year','Site','Plot','Nest','Cove','BRC'],keep= 'last')
+
+
+#get species names
+grndfloraspecies = pd.merge(grndlong,BRC, on = 'BRC', how = "left")
+
+#now grndflora long is same length after join with species, hooray.
+
+#save this
+grndfloraspecies.to_csv('../data/grndfloralongspecies.csv')
+
