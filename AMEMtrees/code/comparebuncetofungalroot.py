@@ -24,4 +24,4 @@ bnc_in_fr_wodups_wide.dropna(axis = 0, how = 'all', inplace = True)
 #now you can see there are 82 species in FungalRoot that occur in Bunce, 
 #and I could use Fungal Root references
 
-bnc_in_fr_wodups_wide_wonan.to_csv('../data/BunceInFungalRoot.csv')
+bnc_in_fr_wodups_wide.to_csv('../data/BunceInFungalRoot.csv')

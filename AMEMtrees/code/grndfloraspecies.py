@@ -57,5 +57,15 @@ grndfloraspecies = pd.merge(grndlong,BRC, on = 'BRC', how = "left")
 #now grndflora long is same length after join with species, hooray.
 
 #save this
-grndfloraspecies.to_csv('../data/grndfloralongspecies.csv')
+grndfloraspecies.to_csv('../data/grndfloralongspecies.csv', index=False)
+
+#above is long df of year/site/plot/nest/cover/brc/name
+#now get just herb list to check species
+
+species = grndfloraspecies[['BRC','BRC names']].drop_duplicates()
+species.to_csv('../data/groundspecieslist.csv', index=False)
+
+
+
+
 

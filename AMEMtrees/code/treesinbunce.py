@@ -28,5 +28,12 @@ BRC.rename(columns = {'BRC number': 'BRC'}, inplace = True)
 #get species names by cross ref with BRC codes
 treenames = pd.merge(trees,BRC,on = 'BRC', how = 'left')
 
+#save this
+treenames.to_csv('../data/TreesInBunceFromDBH.csv',index=False)
 
-treenames.to_csv('../data/TreesInBunceFromDBH.csv')
+#above is nice long df of site/plot/brc/dbh/count/yr/name
+#now just want long list to check if they are trees
+
+#select species names from above and delete duplicates
+species = treenames[['BRC','BRC names']].drop_duplicates()
+species.to_csv('../data/treespecieslist.csv',index =  False)
