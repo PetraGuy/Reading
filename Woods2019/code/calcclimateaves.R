@@ -1,6 +1,6 @@
 
 # take the metoffice climate data for all the stations and work out 5 year averages
-setwd("C:/dev/code/Woods2019/code")
+setwd("C:/dev/code/Reading/Woods2019/code")
 library(readxl)
 
 
