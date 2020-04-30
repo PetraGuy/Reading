@@ -26,6 +26,7 @@ extracted <- extractdata[mysites, roll = "nearest"]
 #save ndep data
 
 saveRDS(extracted, "../data/ndepsepbysite.RDS")
+write.csv(extracted,'../data/ndepbysite.csv')
 
 ############################################################
 ####being lazy and not writing function - repeat for ndeptotal
@@ -40,3 +41,4 @@ extracted <- extractdata[mysites, roll = "nearest"]
 #save ndep data
 
 saveRDS(extracted, "../data/ndeptotalbysite.RDS")
+write.csv(extracted,'../data/ndeptotalbysite.csv')

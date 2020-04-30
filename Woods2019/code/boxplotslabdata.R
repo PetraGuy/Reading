@@ -25,15 +25,12 @@ normdata = as.data.frame(apply(removed[c(2:6)],2,normalize))
 #STICK SITE AND HORIZON BACK ON
 normdata[c('horizon','site')] = removed[c('horizon','site')]
 
-
 melted = melt(normdata)
-ggplot(melted, aes(x = site, y = value))+
-  geom_boxplot(aes(fill = horizon))+
-  facet_grid(rows = vars(site))
 
-ggplot(melted, aes(x = variable, y = value))+
-  geom_boxplot(aes(fill = horizon))+
-  facet_wrap(vars(site))+
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))
-
-
+ggplot(data = melted, aes(x = value, group = horizon, fill = horizon))+
+  geom_density(adjust = 1.5, alpha = 0.4)+
+  facet_wrap(~variable) +
+  ylab("density")+
+  xlab("normalised value")+
+  theme(legend.position = c(0.85,0.2))
+  )

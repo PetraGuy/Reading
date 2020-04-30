@@ -42,31 +42,37 @@ def heatmap(data):
 # Correlation Matrix Heatmap
     f, ax = plt.subplots(figsize=(10, 6))
     corr = data.corr()
-    hm = sns.heatmap(round(corr,2), annot=True, ax=ax, cmap="coolwarm",fmt='.2f',
+    mask = np.triu(np.ones_like(corr, dtype=np.bool))
+    hm = sns.heatmap(round(corr,2),mask = mask, annot=True, ax=ax, cmap="coolwarm",fmt='.2f',
                  linewidths=.05)
     f.subplots_adjust(top=0.93)
     t= f.suptitle('Attributes Correlation Heatmap', fontsize=14)
+   
 
 heatmap(subsetclimate)
 heatmap(subsetlabdata)
 heatmap(subsetcont)
 
    
-#pairwise scatter plots
-g = sns.PairGrid(subsetlabdata)
-g.map(plt.scatter);
+# Compute the correlation matrix
+corr = subsetcont.corr()
 
-#box plots of OR versus A
+# Generate a mask for the upper triangle
+mask = np.triu(np.ones_like(corr, dtype=np.bool))
+
+# Set up the matplotlib figure
+f, ax = plt.subplots(figsize=(11, 9))
+
+# Generate a custom diverging colormap
+cmap = sns.diverging_palette(220, 10, as_cmap=True)
+
+# Draw the heatmap with the mask and correct aspect ratio
+sns.heatmap(corr, mask=mask, cmap=cmap, vmax=.3, center=0,
+            square=True, linewidths=.5, cbar_kws={"shrink": .5})
 
 
-sns.set(style="whitegrid", palette="pastel", color_codes=True)
 
-# Load the example tips dataset
 
-# Draw a nested violinplot and split the violins for easier comparison
 
-sns.violinplot(x="day", y="total_bill", hue="smoker",
-               split=True, inner="quart",
-               palette={"Yes": "y", "No": "b"},
-               data=tips)
-sns.despine(left=True)
+
+
