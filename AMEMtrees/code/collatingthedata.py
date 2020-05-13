@@ -64,6 +64,7 @@ def area(count,dbh):
     area = (((2.5+(dbh-1)*5)/2)*math.pi)*count
     return(area)
 
+# change this if you want to include the effect of dual status trees
 def percentam(row):
     if row['ms']=='am':
         val = row['%']
@@ -113,9 +114,8 @@ herbrichness2 = herbflora2.groupby(['Site','Plot']).size()
 ######################################################################
 
 #get a count of the allolopaths by plot or site
-#would have been easier to flag allelopaths as  1 then I could sum!
 shrubs1allelos=shrubs1.groupby(['Site','Plot'])['flag'].sum()
 shrubs2allelos=shrubs2.groupby(['Site','Plot'])['flag'].sum()
 
 
-
+#################################################################
