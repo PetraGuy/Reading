@@ -1,4 +1,4 @@
-,BRC,ylus,preneation,life form,woodiness,Tjan,Tjul,Prec,Br Habitats,L,F,R,N,S,ms,flag
+,BRC,species,preneation,life form,woodiness,Tjan,Tjul,Prec,Br Habitats,L,F,R,N,S,ms,flag
 335,9202397,Abies procera,p,Ph,wt,,,,,,,,,,em,
 537,9204658,Abies sp.,p,Ph,wt,,,,,,,,,,em,
 147,9203,Acer campestre,p,Ph,wt,3.6,15.7,839,"1, 3",5,5,7,6,0,am,
@@ -583,13 +583,13 @@
 31,9201607,Primula vulgaris,p,hc,h,3.5,14.5,1108,"1, 16",5,5,6,4,0,,
 69,9201610,Prunella vulgaris,p,hc,h,3.5,14.4,1106,"6, 7",7,5,6,4,0,,
 260,9201611,Prunus avium,p,Ph,wt,3.4,14.8,1024,1,4,5,6,6,0,am,
-187,9201615,Prunus laurocerasus,p,Ph,wt,3.8,15.3,953,"1, 17",4,6,5,6,0,am,
+187,9201615,Prunus laurocerasus,p,Ph,wt,3.8,15.3,953,"1, 17",4,6,5,6,0,am,a
 324,9201616,Prunus padus,p,Ph,wt,2.7,13.8,1240,1,5,6,6,7,0,am,
 588,9204552,Prunus sp.,,,wt,,,,,,,,,,am,
 42,9201617,Prunus spinosa,p,Ph,wt,3.7,14.8,1032,3,6,5,7,6,1,am,
 491,820507,Pseudoscleropodium purum,,,moss,,,,,,,,,,,
 299,9205178,Pseudotsuga spp.,,,wt,,,,,,,,,,em,
-1,9101619,Pteridium aquilinum,p,Gn,h,3.5,14.5,1109,"1, 9",6,5,3,3,0,,
+1,9101619,Pteridium aquilinum,p,Gn,h,3.5,14.5,1109,"1, 9",6,5,3,3,0,,a
 729,820512,Ptilium crista-castrensis,,,moss,,,,,,,,,,,
 284,9201625,Pulicaria dysenterica,p,hc,h,4,15.5,885,"6, 11",7,7,7,4,0,,
 471,9201627,Pulmonaria longifolia,p,hc,h,4.7,16.5,810,"1, 3",6,4,6,5,0,,
@@ -605,7 +605,7 @@
 43,9201660,Ranunculus repens,p,hc,h,3.5,14.5,1105,"3, 5, 6",6,7,6,7,0,,
 594,9204555,Ranunculus seedling/sp,,,h,,,,,,,,,,,
 786,9201672,Reseda lutea,p,hc,h,3.6,15.7,808,3,7,4,7,5,0,,
-437,9201675,Rhamnus cathartica,p,Ph,wt,3.6,15.8,783,"1, 3",7,5,7,6,0,am,
+437,9201675,Rhamnus cathartica,p,Ph,wt,3.6,15.8,783,"1, 3",7,5,7,6,0,am,a
 347,9205193,Rhinanthus sp.,,,h,,,,,,,,,,,
 673,820389,Rhizomnium punctatum,,,moss,,,,,,,,,,,
 542,9201708,Rosa canina agg.,p,Pn,ws,3.7,15.1,993,"1, 3",6,5,7,6,0,am,
@@ -617,13 +617,13 @@
 572,9201726,Rubus caesius,p,Ch,ws,3.8,15.6,851,3,7,7,7,6,0,am,
 3,9201728,Rubus fruticosus agg.,p,Pn,ws,3.6,14.6,1089,"1, 3",6,6,6,6,0,am,i
 77,9201729,Rubus idaeus,p,Pn,ws,3.4,14.5,1095,1,6,5,5,5,0,am,
-240,9201698,Robinia pseudoacacia,p,Ph,wt,3.7,16,748,"3, 17",7,4,6,6,0,am,
+240,9201698,Robinia pseudoacacia,p,Ph,wt,3.7,16,748,"3, 17",7,4,6,6,0,am,a
 475,9201348,Rorippa nasturtium-aquaticum agg.,p,Hy,h,3.7,14.8,1027,"11, 13, 14",7,10,7,7,0,,
 279,9201760,Ruscus aculeatus,p,Pn,ws,4.3,16.4,782,"1, 3",4,5,4,4,0,am,
 669,9201787,Salix aurita,p,Pn,ws,3.4,14.2,1190,"1, 16",7,8,4,3,0,em,
 513,9201789,Salix cinerea,p,Ph,ws,3.5,14.5,1096,"1, 11",7,8,6,5,0,d,
 653,9201802,Salix repens agg.,p,Pn,ws,3.5,14,1205,"10, 19",8,7,6,3,0,d,
-96,9201815,Sambucus nigra,p,Ph,ws,3.6,14.7,1061,"3, 17",6,5,7,7,0,u,
+96,9201815,Sambucus nigra,p,Ph,ws,3.6,14.7,1061,"3, 17",6,5,7,7,0,u,a
 615,9201816,Sambucus racemosa,p,Ph,ws,2.3,13.6,1048,"1, 3",6,5,6,7,0,u,
 257,9201822,Cytisus scoparius,p,Pn,ws,3.4,14.6,1085,3,8,5,4,4,0,am,
 82,9201947,Solanum dulcamara,p,Pn,sw,3.8,15.2,945,"3, 11, 14",7,8,7,7,0,am,
