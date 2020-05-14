@@ -10,6 +10,7 @@ import pandas as pd
 floralist = pd.read_csv('../data/grndspeciesfullinfoWS.csv')
 groundflora = pd.read_csv('../data/GroundFlora.csv')
 trees = pd.read_csv('../data/Trees.csv')
+lba = pd.read_csv('../data/Live_basal_area.csv')
 
 
 #take the herbs and woody shrubs out of the ground flora
@@ -86,8 +87,8 @@ trees1['%am'] = trees1.apply(percentam,axis = 1)
 trees2['%am'] = trees2.apply(percentam,axis = 1)
 
 #create array of %am per plot ready to add to plot level df when ready
-trees1plotam = trees1.groupby(['SITE','PLOT'])['%am'].sum()
-trees2plotam = trees2.groupby(['SITE','PLOT'])['%am'].sum()
+trees1plotam = trees1.groupby(['SITE','PLOT'])['%am'].sum().to_frame().reset_index()
+trees2plotam = trees2.groupby(['SITE','PLOT'])['%am'].sum().to_frame().reset_index()
 #########################################################################
 
 #need %am due to shrubs which is going to be cover
@@ -97,9 +98,8 @@ shrubs2['%']=shrubs2['CoverYr2']*2
 shrubs2['amcover']=shrubs2.apply(percentam,axis = 1)
 
 #get am cover by plot for the shrubs
-
-shrubs1plotam = shrubs1.groupby(['Site','Plot'])['amcover'].sum()
-shrubs2plotam = shrubs2.groupby(['Site','Plot'])['amcover'].sum()
+shrubs1plotam = shrubs1.groupby(['Site','Plot'])['amcover'].sum().to_frame().reset_index()
+shrubs2plotam = shrubs2.groupby(['Site','Plot'])['amcover'].sum().to_frame().reset_index()
 
 #######################################################################
 
@@ -108,14 +108,170 @@ shrubs2plotam = shrubs2.groupby(['Site','Plot'])['amcover'].sum()
 #I'll keep these separate for now
 
 #get herb species richness
-herbrichness1 = herbflora1.groupby(['Site','Plot']).size()
-herbrichness2 = herbflora2.groupby(['Site','Plot']).size()
+herbrichness1 = herbflora1.groupby(['Site','Plot']).size().to_frame().reset_index()
+herbrichness2 = herbflora2.groupby(['Site','Plot']).size().to_frame().reset_index()
 
 ######################################################################
 
-#get a count of the allolopaths by plot or site
-shrubs1allelos=shrubs1.groupby(['Site','Plot'])['flag'].sum()
-shrubs2allelos=shrubs2.groupby(['Site','Plot'])['flag'].sum()
+#get a count of the allolopaths by plot or site for shrubs
+shrubs1allelos=shrubs1.groupby(['Site','Plot'])['flag'].sum().to_frame().reset_index()
+shrubs2allelos=shrubs2.groupby(['Site','Plot'])['flag'].sum().to_frame().reset_index()
 
 
 #################################################################
+
+
+#get count of allelos for trees per plot
+trees1allelos=trees1.groupby(['SITE','PLOT'])['flag'].sum().to_frame().reset_index()
+trees2allelos=trees2.groupby(['SITE','PLOT'])['flag'].sum().to_frame().reset_index()
+
+####################################################################
+
+#Combine tree and shrub allelo counts per plot
+#merge the shrub and tree allelos first coz there are missing plots
+#need to tidy colnames
+
+def tidycols(df):
+    df.rename(columns={'SITE':'Site',
+                   'PLOT':'Plot'},
+          inplace=True)
+    return(df)
+
+trees1allelos = tidycols(trees1allelos)
+
+allelos1 = pd.merge(shrubs1allelos,trees1allelos, on=['Site','Plot'],how ='left')
+allelos2 = pd.merge(shrubs2allelos,trees2allelos, on=['Site','Plot'],how ='left')
+
+#now add cols to get total allelos per plot
+allelos1['totalallelos']=allelos1.fillna(0)['flag_x']+allelos1.fillna(0)['flag_y']
+allelos2['totalallelos']=allelos2.fillna(0)['flag_x']+allelos2.fillna(0)['flag_y']
+
+########################################################################
+
+#get herb cover
+herbcover1 = herbflora1.groupby(['Site','Plot'])['CoverYr1'].sum().to_frame().reset_index()
+herbcover2 = herbflora2.groupby(['Site','Plot'])['CoverYr2'].sum().to_frame().reset_index()
+
+##########################################################################
+
+#sort out the lba as the shading parameter
+#split into yr1 and yr2
+
+lba1 = lba[['SITE','PLOT','y71']]
+lba2 = lba[['SITE','PLOT','y03']]
+
+#########################################################################
+
+#now get other cols - NVC,SOM,soilpH
+som = pd.read_csv('../data/soil_som.csv')
+pH = pd.read_csv('../data/soil_ph.csv')
+NVC = pd.read_csv('../data/NVC.csv')
+
+#dont want nvc subcodes. i.e. want W10a as W10, so delete last character if a letter
+from deletefromstrings import deletelast
+nvc = list(NVC['NVC'])
+NVC['shortcodes'] = deletelast(nvc)
+
+#now split into years
+nvc1 =  NVC[NVC['Yr']==1]
+nvc2 = NVC[NVC['Yr']==2]
+som1 = som[['SITE','PLOT','SOM1971']]
+som2 = som[['SITE','PLOT','SOM resurvey']]
+pH1 = pH[['SITE','PLOT','pH1971']]
+pH2 = pH[['SITE','PLOT','pH resurvey']]
+
+############################################################################
+#combine allNVC which has NVC mycor status with nvc codes above
+
+nvctypes = pd.read_csv('../data/allnvcs.csv')
+nvc1full = pd.merge(nvc1,nvctypes,left_on ='shortcodes',right_on = 'nvc' )
+nvc2full = pd.merge(nvc2,nvctypes,left_on ='shortcodes',right_on = 'nvc' )
+
+############################################################################
+#now i have all the variables to pull together into 2 plot level dfs, one for each year
+#Base site/plot must be ground flora for that year, as that is where all flora stored
+#Start with herbrichness
+#rename cols and tidy as you go
+
+
+year1data = herbrichness1.rename(columns={0: 'alpha'})
+
+#add herbcover
+year1data = pd.merge(year1data,herbcover1,on=['Site','Plot'],how = 'left')
+year1data = year1data.rename(columns={'CoverYr1': 'cover'})
+
+#add count of allelos
+year1data = year1data = pd.merge(year1data,allelos1,on=['Site','Plot'],how = 'left')
+year1data = year1data.drop(['flag_y_x','flag_x','flag_y_y','totalallelos_x'],axis = 1)
+year1data = year1data.rename(columns={'totalallelos_y': 'allelos'})
+
+#add lba
+lba1 = lba1.rename(columns={'SITE': 'Site','PLOT':'Plot'})
+year1data = year1data = pd.merge(year1data,lba1,on=['Site','Plot'],how = 'left')
+year1data = year1data.rename(columns={'y71': 'lba'})
+
+#addSOM
+som1 = som1.rename(columns={'SITE': 'Site','PLOT':'Plot','SOM1971':'som'})
+year1data = pd.merge(year1data,som1,on=['Site','Plot'],how = 'left')
+
+#add pH
+pH1 = pH1.rename(columns={'SITE': 'Site','PLOT':'Plot','pH1971':'pH'})
+year1data = pd.merge(year1data,pH1,on=['Site','Plot'],how = 'left')
+
+#add %am for trees
+trees1plotam = trees1plotam.rename(columns={'SITE': 'Site','PLOT':'Plot','%am':'amtrees'})
+year1data = pd.merge(year1data,trees1plotam,on=['Site','Plot'],how = 'left')
+
+#add am cover from shrubs
+year1data = pd.merge(year1data,shrubs1plotam,on=['Site','Plot'],how = 'left')
+
+#add NVC data
+nvc1full = nvc1full.drop(['NVC','Yr','shortcodes','Unnamed: 0'],axis = 1)
+nvc1full = nvc1full.rename(columns={'SITE':'Site','PLOT':'Plot'})
+year1data = pd.merge(year1data,nvc1full,on=['Site','Plot'],how = 'left')
+
+###################################################################
+#repeat for year 2
+
+year2data = herbrichness2.rename(columns={0: 'alpha'})
+
+#add herbcover
+year2data = pd.merge(year2data,herbcover2,on=['Site','Plot'],how = 'left')
+year2data = year2data.rename(columns={'CoverYr2': 'cover'})
+
+#add count of allelos
+year2data = year2data = pd.merge(year2data,allelos2,on=['Site','Plot'],how = 'left')
+year2data = year2data.drop(['flag_x','flag_y'],axis = 1)
+year2data = year2data.rename(columns={'totalallelos': 'allelos'})
+
+#add lba
+lba2 = lba2.rename(columns={'SITE': 'Site','PLOT':'Plot'})
+year2data = year2data = pd.merge(year2data,lba2,on=['Site','Plot'],how = 'left')
+year2data = year2data.rename(columns={'y03': 'lba'})
+
+#addSOM
+som2 = som2.rename(columns={'SITE': 'Site','PLOT':'Plot','SOM resurvey':'som'})
+year2data = pd.merge(year2data,som2,on=['Site','Plot'],how = 'left')
+
+#add pH
+pH2 = pH2.rename(columns={'SITE': 'Site','PLOT':'Plot','pH resurvey':'pH'})
+year2data = pd.merge(year2data,pH2,on=['Site','Plot'],how = 'left')
+
+#add %am for trees
+trees2plotam = trees2plotam.rename(columns={'SITE': 'Site','PLOT':'Plot','%am':'amtrees'})
+year2data = pd.merge(year2data,trees2plotam,on=['Site','Plot'],how = 'left')
+
+#add am cover from shrubs
+year2data = pd.merge(year2data,shrubs2plotam,on=['Site','Plot'],how = 'left')
+
+#add NVC data
+nvc2full = nvc2full.drop(['NVC','Yr','shortcodes','Unnamed: 0'],axis = 1)
+nvc2full = nvc2full.rename(columns={'SITE':'Site','PLOT':'Plot'})
+year2data = pd.merge(year2data,nvc2full,on=['Site','Plot'],how = 'left')
+
+#####################################################################
+
+#save the files
+
+year1data.to_csv('../data/year1data.csv',index=False)
+year2data.to_csv('../data/year2data.csv',index=False)
