@@ -1,21 +1,21 @@
 BRC,species,,ms,flag
 9202039,Taxus baccata,,am,1
 9204446,Quercus seedling/sp,,em,0
-920841,Fraxinus excelsior (c),,am,1
+920841,Fraxinus excelsior (c),,am,0
 9204526,Cotoneaster sp.,,am,0
 920557,Corylus avellana,,em,0
 9204442,Larix sp.,,em,0
 9202119,Ulmus glabra,,am,0
 9201967,Sorbus lancastriensis,,am,0
 9201960,Sorbus aucuparia,,am,0
-920569,Crataegus monogyna,,u,0
+920569,Crataegus monogyna,,em,0
 9204445,Betula seedling/sp,,em,0
 9201230,Malus sylvestris,,am,0
 92077,Alnus glutinosa,,d,0
 200001670,Ulex sp.,,am,0
 9204558,Salix seedling/sp,,u,0
 9201788,Salix caprea,,em,0
-9201023,Ilex aquifolium,,u,0
+9201023,Ilex aquifolium,,am,0
 9205178,Pseudotsuga spp.,,em,0
 9205,Acer pseudoplatanus,,am,0
 920810,Fagus sylvatica,,em,0
@@ -35,7 +35,7 @@ BRC,species,,ms,flag
 920240,Betula pubescens,,em,0
 9201555,Populus tremula,,d,0
 9201617,Prunus spinosa,,am,0
-920568,Crataegus laevigata x monogyna (C. x macrocarpa),,u,0
+920568,Crataegus laevigata x monogyna (C. x macrocarpa),,em,0
 9203,Acer campestre,,am,0
 9201635,Quercus cerris,,em,0
 200001651,Populus sp.,,d,0
@@ -58,7 +58,7 @@ BRC,species,,ms,flag
 9202401,Picea sitchensis,,em,0
 9202398,Chamaecyparis lawsoniana,,am,0
 9202122,Ulmus procera,,am,0
-920570,Crataegus laevigata,,u,0
+920570,Crataegus laevigata,,em,0
 9201144,Ligustrum vulgare,,am,0
 920839,Frangula alnus,,am,0
 9201675,Rhamnus cathartica,,am,1

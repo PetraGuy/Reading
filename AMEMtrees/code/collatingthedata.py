@@ -6,12 +6,27 @@ Sort out ground flora in herbs and shrub dfs
 """
 import pandas as pd
 
-#get the data files
-floralist = pd.read_csv('../data/grndspeciesfullinfoWS.csv')
-groundflora = pd.read_csv('../data/GroundFlora.csv')
-trees = pd.read_csv('../data/Trees.csv')
-lba = pd.read_csv('../data/Live_basal_area.csv')
+#1) any changes to tree species and this must be redone
+#this is where ms is added to tree list
+trees = pd.read_csv('../data/treespecieslist.csv')#tree species details
+treesinplots = pd.read_csv('../data/TreesByPlot.csv')#trees by plot
+#merge to add mycor to trees list
+treeswithmycor = pd.merge(treesinplots,trees, left_on = 'BRC',
+                          right_on = 'BRC', how = 'left')
+treeswithmycor.to_csv('../data/Trees.csv', index = False)#now trees by plot have details
 
+#######################################################
+
+#get the data files
+floralist = pd.read_csv('../data/grndspeciesfullinfoWS.csv')# species details
+groundflora = pd.read_csv('../data/GroundFlora.csv')#flora by plot
+trees = pd.read_csv('../data/Trees.csv')#trees by plot with details
+lba = pd.read_csv('../data/Live_basal_area.csv')#lba
+#############################################
+
+
+#2) separate herbs from woody shrubs in ground flora, split into years and merge with
+#specie edtails with grnd flora to get species of herbs/shrub by year by plot
 
 #take the herbs and woody shrubs out of the ground flora
 herbs = floralist.loc[floralist['woodiness'] == 'h']
@@ -22,8 +37,8 @@ herbs['BRC'] = herbs['BRC'].astype(int)
 shrubs['BRC'] = shrubs['BRC'].astype(int)
 
 
-#grnd flora is a bit of a mess, duplicates in BRC etc - easier to separate 
-#years 1 and 2
+#grnd flora is a bit of a mess, duplicates in BRC etc 
+#separate herbs and shrubs into years 1 and 2
 flora1 = groundflora.loc[:,['Site', 'Plot', 'Nest', 'CoverYr1','AmalgamsYr1']].drop_duplicates().dropna()
 flora2 = groundflora.loc[:,['Site', 'Plot', 'Nest', 'CoverYr2','AmalgamsYr2']].drop_duplicates().dropna()
 
@@ -73,7 +88,7 @@ def percentam(row):
         val = 0
     return(val)
     
-#year 1 and 2 are together fir trees, split out so trees corresponds with shrubs and herbs
+#year 1 and 2 are together for trees, split out so trees corresponds with shrubs and herbs
 trees1 = trees[trees['Yr']==1]
 trees2 = trees[trees['Yr']==2]
 
@@ -114,16 +129,27 @@ herbrichness2 = herbflora2.groupby(['Site','Plot']).size().to_frame().reset_inde
 ######################################################################
 
 #get a count of the allolopaths by plot or site for shrubs
-shrubs1allelos=shrubs1.groupby(['Site','Plot'])['flag'].sum().to_frame().reset_index()
-shrubs2allelos=shrubs2.groupby(['Site','Plot'])['flag'].sum().to_frame().reset_index()
+#This needs to reflect cover of allelo plant, not just sum of plants -
+#what if bracken covers half of plot for eg.
+#add allelos column  =  coverxflag
+shrubs1['allelos'] = shrubs1['CoverYr1']*shrubs1['flag']
+shrubs2['allelos'] = shrubs2['CoverYr2']*shrubs2['flag']
+
+shrubs1allelos=shrubs1.groupby(['Site','Plot','CoverYr1'])['allelos'].sum().to_frame().reset_index()
+shrubs2allelos=shrubs2.groupby(['Site','Plot','CoverYr2'])['allelos'].sum().to_frame().reset_index()
 
 
 #################################################################
 
 
 #get count of allelos for trees per plot
-trees1allelos=trees1.groupby(['SITE','PLOT'])['flag'].sum().to_frame().reset_index()
-trees2allelos=trees2.groupby(['SITE','PLOT'])['flag'].sum().to_frame().reset_index()
+#add count and dbh class so can get "quantity of allelo, as for shrubs above, already have a row% for trees
+#so add col %xflag will give allel val 0 if flag, 0
+trees1['allelos']=trees1['%']*trees1['flag']
+trees2['allelos']=trees2['%']*trees2['flag']
+
+trees1allelos=trees1.groupby(['SITE','PLOT'])['allelos'].sum().to_frame().reset_index()
+trees2allelos=trees2.groupby(['SITE','PLOT'])['allelos'].sum().to_frame().reset_index()
 
 ####################################################################
 
@@ -137,18 +163,20 @@ def tidycols(df):
           inplace=True)
     return(df)
 
-trees1allelos = tidycols(trees1allelos)
+trees2allelos = tidycols(trees2allelos)
 
+#have allelos_x = shrubs and allelos_y = trees
 allelos1 = pd.merge(shrubs1allelos,trees1allelos, on=['Site','Plot'],how ='left')
 allelos2 = pd.merge(shrubs2allelos,trees2allelos, on=['Site','Plot'],how ='left')
 
 #now add cols to get total allelos per plot
-allelos1['totalallelos']=allelos1.fillna(0)['flag_x']+allelos1.fillna(0)['flag_y']
-allelos2['totalallelos']=allelos2.fillna(0)['flag_x']+allelos2.fillna(0)['flag_y']
+#but one is cover one is num stems, so do this later aftrer normalising
+#allelos1['totalallelos']=allelos1.fillna(0)['flag_x']+allelos1.fillna(0)['flag_y']
+#allelos2['totalallelos']=allelos2.fillna(0)['flag_x']+allelos2.fillna(0)['flag_y']
 
 ########################################################################
 
-#get herb cover
+#get herb cover to be used as abundance
 herbcover1 = herbflora1.groupby(['Site','Plot'])['CoverYr1'].sum().to_frame().reset_index()
 herbcover2 = herbflora2.groupby(['Site','Plot'])['CoverYr2'].sum().to_frame().reset_index()
 
@@ -171,6 +199,7 @@ NVC = pd.read_csv('../data/NVC.csv')
 from deletefromstrings import deletelast
 nvc = list(NVC['NVC'])
 NVC['shortcodes'] = deletelast(nvc)
+NVC.to_csv('../data/NVCshort.csv')
 
 #now split into years
 nvc1 =  NVC[NVC['Yr']==1]
@@ -202,8 +231,10 @@ year1data = year1data.rename(columns={'CoverYr1': 'cover'})
 
 #add count of allelos
 year1data = year1data = pd.merge(year1data,allelos1,on=['Site','Plot'],how = 'left')
-year1data = year1data.drop(['flag_y_x','flag_x','flag_y_y','totalallelos_x'],axis = 1)
-year1data = year1data.rename(columns={'totalallelos_y': 'allelos'})
+del year1data['CoverYr1']
+year1data = year1data.rename(columns={'allelos_x': 'shrub_allelo','allelos_y':'tree_allelo'})
+#year1data = year1data.drop(['flag_x','flag_x','flag_y'],axis = 1)
+#year1data = year1data.rename(columns={'totalallelos_y': 'allelos'})
 
 #add lba
 lba1 = lba1.rename(columns={'SITE': 'Site','PLOT':'Plot'})
@@ -240,9 +271,11 @@ year2data = pd.merge(year2data,herbcover2,on=['Site','Plot'],how = 'left')
 year2data = year2data.rename(columns={'CoverYr2': 'cover'})
 
 #add count of allelos
-year2data = year2data = pd.merge(year2data,allelos2,on=['Site','Plot'],how = 'left')
-year2data = year2data.drop(['flag_x','flag_y'],axis = 1)
-year2data = year2data.rename(columns={'totalallelos': 'allelos'})
+year2data = pd.merge(year2data,allelos2,on=['Site','Plot'],how = 'left')
+del year2data['CoverYr2']
+year2data = year2data.rename(columns={'allelos_x': 'shrub_allelo','allelos_y':'tree_allelo'})
+#year1data = year1data.drop(['flag_x','flag_x','flag_y'],axis = 1)
+#year1data = year1data.rename(columns={'totalallelos_y': 'allelos'})
 
 #add lba
 lba2 = lba2.rename(columns={'SITE': 'Site','PLOT':'Plot'})
@@ -273,5 +306,5 @@ year2data = pd.merge(year2data,nvc2full,on=['Site','Plot'],how = 'left')
 
 #save the files
 
-year1data.to_csv('../data/year1data.csv',index=False)
-year2data.to_csv('../data/year2data.csv',index=False)
+year1data.to_csv('../data/year1dataA.csv',index=False)
+year2data.to_csv('../data/year2dataA.csv',index=False)
