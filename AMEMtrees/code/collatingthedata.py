@@ -174,7 +174,7 @@ allelos2 = pd.merge(shrubs2allelos,trees2allelos, on=['Site','Plot'],how ='left'
 #allelos1['totalallelos']=allelos1.fillna(0)['flag_x']+allelos1.fillna(0)['flag_y']
 #allelos2['totalallelos']=allelos2.fillna(0)['flag_x']+allelos2.fillna(0)['flag_y']
 
-########################################################################
+####################################################### #################
 
 #get herb cover to be used as abundance
 herbcover1 = herbflora1.groupby(['Site','Plot'])['CoverYr1'].sum().to_frame().reset_index()
