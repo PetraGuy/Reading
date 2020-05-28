@@ -9,22 +9,25 @@ normalize <- function(x) {
   
   return(norm)
 }
+'%!in%' = function(x,y)!('%in%'(x,y))
 
 
 #get data
-data = read.csv('../data/year2dataA.csv')
+data = read.csv('../data/alldata.csv')
 
 #get rid of non woodland plots - anything that doesnt syart with W
-woodsonly = data%>%filter(str_detect(nvc,"W"))
+woodsonly = data%>%filter(str_detect(shortcodes,"W"))
 
+#take out the scrub codes -W19 - W25 inclusive
+scrub = c('W19','W20','W21','W22','W23','W24','W25')
 
-# Look at pH over am and em plots
-
+woods = filter(woodsonly, shortcodes %!in% scrub)
+#these are am and em codes for non-scrub plots
 am = c('W6','W7','W8','W9','W12','W13')
 em = c('W3','W4','W10','W11','W14','W15','W16','W17')
 
-amplots = filter(woodsonly, nvc %in% am)
-emplots = filter(woodsonly, nvc %in% em)
+amplots = filter(woods, shortcodes %in% am)
+emplots = filter(woods, shortcodes %in% em)
 #####
 
 #pH across plots

@@ -157,5 +157,15 @@ alldata = pd.merge(alldata,som,on = ['Site','Plot','Yr'], how = 'left')
 alldata = pd.merge(alldata,pH, on = ['Site','Plot','Yr'], how = 'left')
 alldata = pd.merge(alldata,nvc, on = ['Site','Plot','Yr'], how = 'left')
 
+#######################################################################
 
+#amcover and inv cover need to be %
 
+alldata['percentamcover'] = alldata['amcover']/alldata['totashrublcover']
+alldata['percentinvcover']= alldata['incover']/alldata['totashrublcover']
+ #tidy by removing unneeded cols
+ 
+alldata = alldata.drop(['totaldbh', 'amdbhcounts','invdbhcounts','totashrublcover', 'amcover','incover','NVC'], axis =1)
+alldata= alldata.rename(columns = {'percentam':'amtreeprop','percentinv':'invtreeprop'})
+
+alldata.to_csv('../data/alldata.csv', index = False)
