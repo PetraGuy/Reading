@@ -1,3 +1,10 @@
+#pH across NVC
+#alpha acros pH
+#effect sizes by year at plot level
+#mixed effects
+#distribution of alpha across different plot types
+
+
 setwd("C:/dev/code/Reading/AMEMtrees/Code")
 library(dplyr)
 library(jtools)
@@ -61,69 +68,110 @@ woods[is.na(woods)] = 0
 #nb - W1, dual damp willows, in both
 am = c('W6','W7','W8','W9','W12','W13','W1')
 em = c('W3','W4','W10','W11','W14','W15','W16','W17','W1')
+#look at different assignment of am and em
+#am = c('W6','W7','W8','W12','W13')
+#int = c('W10','W11','W14')
+#em = c('W1','W3','W4','W15','W16','W17')
 
 amplots = filter(woods, shortcodes %in% am) #am plots not scrub
+#intplots = filter(woods,shortcodes %in% int) 
 emplots = filter(woods, shortcodes %in% em) #em plots not scrub
+##############################################################################
 
-###################################
-# all data
-#data = alldata
+##look at pH across the above NVC allocations
+#can include intermediate codes or not
 
-#remove the open plots
-#data = woodsonly
+pHam = amplots['pH']
+index = rep('am',length(pHam))
+df1 = cbind(pHam,index)
 
-#without scrub plots
-#data = woods
+#pHint = intplots['pH']
+#index = rep('int', length(pHint))
+#df2 = cbind(pHint,index)
 
-#all wood plots without scrub but uninvaded
-#data = woods%>%filter(percentinvcover<0.5)
+pHem = emplots['pH']
+index = rep('em',length(pHem))
+df3 = cbind(pHem,index)
 
-#split into am and em plots , am first
-#data = amplots
-
-#take uninvaded am plots
-data = amplots%>%filter(percentinvcover<0.1)
-
-#em plots
-#data = emplots
-
-#em plots uninvaded
-#data = emplots%>%filter(percentinvcover < 0.8)
+data = rbind(df1, df3)
 
 
+ggplot(data,aes(x = index, y = pH))+geom_violin(aes(fill = index))
+#####################################################################
 
-#alpha
+#look at alpha diversity and cover across pH
+#produces boxplots of alpha across pH and violin plots of abundance across pH
+
+dfalpha = woodsonly[c(4,10)]
+dfalpha2 <- dfalpha %>% mutate_at(c('alpha'), ~(normalize(.) %>% as.vector))
+dfabund = woodsonly[c(5,10)]
+dfabund2 <- dfabund %>% mutate_at(c('herbcover'), ~(normalize(.) %>% as.vector))
+
+index = rep('rich', nrow(dfalpha2))
+df1 = cbind(dfalpha2,index)
+colnames(df1) = c('value','pH','index')
+df1 = df1%>%mutate(bin = cut_width(pH,width = 0.5, boundary = 0))
+g1 = ggplot(data = na.omit(df1), aes(x=bin, y=value) ) +
+  geom_boxplot(fill="#69b3a2") +
+  xlab("pH")+
+  ylab('alpha diversity')
+
+
+index = rep('abund',nrow(dfabund2))
+df2 = cbind(dfabund2,index)
+colnames(df2) = c('value','pH','index')
+df2 = df2%>%mutate(bin = cut_width(pH,width = 0.5, boundary = 0))
+g2 = ggplot(data = na.omit(df2), aes(x=bin, y=value) ) +
+  geom_violin(fill="#69b3a2") +
+  xlab("pH")+
+  ylab('abundance')
+
+
+grid.arrange(g1,g2)
+
+##################################################################################
+#linear models by year for whatever plots you put in
+#use woods, or am or em etc
+#filter by percentinv for more or less invaded plots etc
+data = emplots #%>%filter(percentinvcover<0.1)
 
   yr1 = data%>%filter(Yr == 1)
   data1 = yr1[-c(1,2,3,5,11,10)]
   scaled1 =  apply(data1[,-1],2, rescale)
   scaled1 = as.data.frame(cbind(data1$alpha,scaled1))
-  scaled1 = scaled1%>%rename(alpha = V1)
+  scaled1 = scaled1%>%dplyr::rename(alpha = V1)
   fit1 = lm(alpha ~ . ,scaled1, na.action = na.exclude)
+  rsquared1 = paste("R2 = ",round(summary(fit2)$r.squared,2))
+  pred1 = predict(fit1)
+  rmse1 = paste("rmse = ",rmse(actual = yr1$alpha,predicted = pred1))
+  
   
   yr2 = data%>%filter(Yr == 2)
   data2 = yr2[-c(1,2,3,5,11,10)]
   scaled2 =  apply(data2[,-1],2, rescale)
   scaled2 = as.data.frame(cbind(data2$alpha,scaled2))
-  scaled2 = scaled2%>%rename(alpha = V1)
+  scaled2 = scaled2%>%dplyr::rename(alpha = V1)
   fit2 = lm(alpha~ . ,scaled2, na.action = na.exclude)
-  
-  x =summ(fit1,vifs = TRUE, confint = TRUE, ci.width = 0.5)
-  x
-  x$coeftable[2:8]
-  y = summ(fit2,vifs = TRUE, confint = TRUE, ci.width = 0.5)
-  y 
-  y$coeftable[2:8]
-  
-  plot_summs(fit1,fit2,ci_level = 0.5)
-  pred1 = predict(fit1)
-  rmse1 = rmse(actual = yr1$alpha,predicted = pred1)
+  rsquared2 = paste("R2 = ",round(summary(fit2)$r.squared,2))
   pred2 = predict(fit2)
-  rmse2 = rmse(actual = yr2$alpha,predicted = pred2)
-#######################################
+  rmse2 = paste("rmse = ",rmse(actual = yr2$alpha,predicted = pred2))
   
+
+#plot_summs is the output with CI using dev tools package  
+plot_summs(fit1,fit2,ci_level = 0.9, model.names = c("1971","2000"))+ggtitle("All plots")
+
+########################################################################################
+
+#look at coefs using summ function if you want, this gives the actual coefficients
+summ(fit1,vifs = TRUE, confint = TRUE, ci.width = 0.5)
+x$coeftable[2:8]
+summ(fit2,vifs = TRUE, confint = TRUE, ci.width = 0.5)
+y$coeftable[2:8]
+
+####################################################################################
   
-  #data = amplots
+#data = amplots #put in whatever data you want to use here
+#repeat the plots for 10 different invasion levels, didnt use this in the end
 
   alpha = function(data){
    # browser()
@@ -152,12 +200,12 @@ data = amplots%>%filter(percentinvcover<0.1)
   return(output)
 }  
 
-  amrichness = alpha(amplots)
+#use above funtion to get richness at different levels of invasion
+amrichness = alpha(amplots)
   
   
-  ##################################
 #plot the above
- library(reshape2) 
+library(reshape2) 
 library(ggplot2)
 x = seq(0.1:1, by = 0.1)
 xvar = rep(x,7)
@@ -170,33 +218,24 @@ ggplot(melted, aes(x = xvar, y = value, colour = variable))+geom_point()+
   ggtitle("emplots, 2000, change standardised parameter effect sizes as
           invaded area of plot increases")
   
-#try mixed effects ############################################
+ ####################################################################################
 
-fit = function(data){
-  yr1 = data%>%filter(Yr == 1)
-  yr2 = data%>%filter(Yr == 2)
-  fit1 = lmer(alpha ~ . +(1|shortcodes) ,data = yr1[-c(1,2,3,5)], na.action = na.omit)
-  fit2 = lmer(alpha ~ . +1|shortcodes ,data = yr2[-c(1,2,3,5)], na.action = na.omit)
-  summ(fit1)
-  summ(fit2)
-  plot_summs(fit1,fit2)
-  pred = predict(fit1)
-  rmse(actual = data$alpha,predicted = pred)
-}  
+#a mixed effects model, not sure what to do with this
 
 
-coef_df = data.frame()
-  data = woods
-  model = lme(alpha~ amtreeprop + invtreeprop+lba+som+percentamcover+percentinvcover+ pH2,
+#mixed effects model on all NVC W NVCs, NVC is random
+data = woods
+model = lme(alpha~ amtreeprop + invtreeprop+lba+som+percentamcover+percentinvcover+ pH2,
               random = ~1|shortcodes, data = woods, na.action = na.omit) 
-  #get coefficients
-  int = round(model$coefficients$fixed[[1]],digits = 2)
-  slope = round(model$coefficients$fixed[[2]],digits = 2)
-  p_slope = round(summary(model)$tTable[2,5],digits=4)
-  sd = round(as.numeric(VarCorr(model)[1,2]),digits = 2)
-  row = as.numeric(c(int,slope, p_slope,sd))
-  coef_df = as.data.frame(rbind(coef_df,row))
-}
+#get coefficients
+coef_df = data.frame()
+int = round(model$coefficients$fixed[[1]],digits = 2)
+slope = round(model$coefficients$fixed[[2]],digits = 2)
+p_slope = round(summary(model)$tTable[2,5],digits=4)
+sd = round(as.numeric(VarCorr(model)[1,2]),digits = 2)
+row = as.numeric(c(int,slope, p_slope,sd))
+coef_df = as.data.frame(rbind(coef_df,row))
+  
 colnames(coef_df)
 
 #but how do I know if this is any good?
@@ -204,6 +243,44 @@ pred = predict(model)
 rmse(actual = data$alpha,predicted = pred)
 plot.lme(model) # this seems to show that the model isn't good. 
 
+#####################################################################################
+
+#looking at spread in richness to see if noise means crap model
+library(gridExtra)
+#amplots
+data1yr1 = amplots%>%filter(Yr==1)
+g1 = ggplot(data1yr1, aes(x=alpha))+geom_density(aes(y = ..count..), fill = "palegreen1")+
+  ggtitle("AM invaded 1971")+ylim(0,60)
+data1yr2 = amplots%>%filter(Yr==2)
+g2 = ggplot(data1yr2, aes(x=alpha))+geom_density(aes(y = ..count..),fill = "palegreen1")+
+  ggtitle("AM invaded 2000")+ylim(0,60)
+
+data2 = amplots%>%filter(percentinvcover<0.2)
+data2yr1 = data2%>%filter(Yr==1)
+g3 = ggplot(data2yr1, aes(x=alpha))+geom_density(aes(y = ..count..),fill = "palegreen1")+
+  ggtitle("AM uninvaded 1971")+ylim(0,60)
+data2yr2 = data2%>%filter(Yr==2)
+g4 = ggplot(data2yr2, aes(x=alpha))+geom_density(aes(y = ..count..),fill = "palegreen1")+
+  ggtitle("AM uninvaded 2000")+ylim(0,60)
+
+# emplots
+data3yr1 = emplots%>%filter(Yr==1)
+g5 = ggplot(data3yr1, aes(x=alpha))+geom_density(aes(y = ..count..),fill = "skyblue1")+
+  ggtitle("EM invaded 1971")+ylim(0,60)
+data3yr2 = emplots%>%filter(Yr==2)
+g6 = ggplot(data3yr2, aes(x=alpha))+geom_density(aes(y = ..count..),fill = "skyblue1")+
+  ggtitle("EM invaded 2000")+ylim(0,60)
+
+data4 = emplots%>%filter(percentinvcover<0.2)
+data4yr1 = data4%>%filter(Yr==1)
+g7 = ggplot(data4yr1, aes(x=alpha))+geom_density(aes(y = ..count..),fill = "skyblue1")+
+  ggtitle("EM uninvaded 1971")+ylim(0,60)
+data4yr2 = data4%>%filter(Yr==2)
+g8 = ggplot(data4yr2, aes(x=alpha))+geom_density(aes(y = ..count..),fill = "skyblue1")+
+  ggtitle("EM uninvaded 2000")+ylim(0,60)
+
+#library(gridExtra)
+grid.arrange(g1,g2,g5,g6,g3,g4,g7,g8, ncol = 2)
 
 
-
+###########################################################################################

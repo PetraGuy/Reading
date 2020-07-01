@@ -1,3 +1,4 @@
+#looked at richness and adundance across am and em plots in year 2
 setwd("C:/dev/code/Reading/AMEMtrees/Code")
 library(dplyr)
 library(stringr)
@@ -10,8 +11,7 @@ data = read.csv('../data/year2data.csv')
 #get rid of non woodland plots - anything that doesnt syart with W
 woodsonly = data%>%filter(str_detect(nvc,"W"))
 
-#replace nas with 0s in lba, allolos,amtrees,a,cover
-
+#replace nas with 0s in lba, allelos,amtrees,a,cover
 woodsonlynona = woodsonly%>%mutate_at(vars(cover,allelos,lba,amtrees,amcover),
                       ~replace_na(.,0))
 

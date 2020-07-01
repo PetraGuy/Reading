@@ -1,3 +1,6 @@
+
+#looking at linear models and model averaging. 
+
 setwd("C:/dev/code/Reading/AMEMtrees/Code")
 library(dplyr)
 library(stringr)
@@ -42,6 +45,7 @@ dfemnorm = dfemnorm%>%mutate(aminoc = amtrees+amcover,
 dfemnorm = dfemnorm[-c(3,4,8,9)]
 
 ################
+#create the linear models for am and em plots
 data = na.omit(dfamnorm)
 lmamalpha = lm(alpha ~ lba + som + pH + aminoc + allelo, data =data, na.action = "na.fail")
 lmamabund = lm(cover ~ lba + som + pH + aminoc + allelo, data = data, na.action = 'na.fail')
@@ -49,6 +53,7 @@ data = na.omit(dfemnorm)
 lmemalpha = lm(alpha ~ lba + som + pH + aminoc + allelo, data = data, na.action = 'na.fail')
 lmemabund = lm(cover ~ lba + som + pH + aminoc + allelo, data = data, na.action = 'na.fail')
 
+#pick out the r2 
 r2amalpha = round(summary(lmamalpha)$r.squared,2)
 r2amabund = round(summary(lmamabund)$r.squared,2)
 r2emalpha = round(summary(lmemalpha)$r.squared,2)
@@ -66,7 +71,7 @@ lmemabund2 = lm(cover ~ lba + som + aminoc + allelo, data = dfemnorm)
 
 #do some model averaging############################
 
-#get top models
+#get top models, use dredge on the model set of interest
 #lmamalpha
 models = dredge(lmamabund)
 model_set = get.models(models, subset = delta<2)
