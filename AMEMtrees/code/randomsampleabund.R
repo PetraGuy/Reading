@@ -1,16 +1,3 @@
-# try random resampling to get richness and other vars for sites which have
-#different number plots in
-#because I have deleted lost of plots - am, open etc, sites now no longer have
-#same number. Pick a number of plots to integrate over - say 5? then sum the cover, richness
-#etc over these 5. But for sites with more than 5 - rendomly resample and average
-
-#moving things up to site level, but need tolook at EM plots only,
-#coz AM shrub cover not imprtoant in AM plots
-#and consider how many  plots in each wood - wont be the same
-
-#THIS IS THE SCRIPT I AM USING FOR THE PLOTS - NOT RANDOMSAMPLE 3 OR 4
-#this for alpha, repeated randomsampleabund for abundance
-
 
 setwd("C:/dev/code/Reading/AMEMtrees/Code")
 library(dplyr)
@@ -150,18 +137,18 @@ getsamples = function(siteslist,yr){
 
 getfits = function(data){
   #lose most of the columns, change here for how many vars required
-  trimmed = data[-c(2,5,6,9)] #this leaves richnes, in and am
-   scaled =  apply(trimmed[,-1],2, rescale)         #do we need to scale when is%cover?
-   scaled = as.data.frame(cbind(data$alpha,scaled))
+  trimmed = data[-c(1,5,6,9)] #this leaves richnes, in and am
+  scaled =  apply(trimmed[,-1],2, rescale)         #do we need to scale when is%cover?
+  scaled = as.data.frame(cbind(data$alpha,scaled))
   inv = scaled$Propinvtree+scaled$propInvcover
   am = scaled$propAMtree+scaled$propAMcover
-  modeldata = as.data.frame(cbind(data$alpha,inv,am))
+  modeldata = as.data.frame(cbind(data$abundance,inv,am))
   modeldata = modeldata%>%dplyr::rename(alpha = V1)
   fit = lm(alpha ~ . ,modeldata, na.action = na.exclude) 
-  #summary(fit)$r.squared
+  summary(fit)$r.squared
   return(fit)
 }
- ###############################################
+###############################################
 
 runall = function(yr,invlevel){
   sitelist = getsites(yr,invlevel)
@@ -181,5 +168,5 @@ model6 = runall(2,0.3)
 
 plot_summs(model1,model2,model3,model4,model5,model6,ci_level = 0.8,
            model.names = c("yr1,inv0.1","yr1,inv0.2","yr1,inv0.3","yr2,inv0.1","yr2,inv0.2","yr3,inv0.3"))+
-  ggtitle("Site richness EM plots only")+
+  ggtitle("Site abundance EM plots only")+
   theme_grey(base_size = 22)

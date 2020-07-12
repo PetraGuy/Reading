@@ -197,7 +197,7 @@ fit2 = lm(alpha~ .,scaledalphaamyr2, na.action = na.exclude)
 fit3 = lm(alpha~ .,scaledalphaemyr1, na.action = na.exclude)
 fit4 = lm(alpha~ .,scaledalphaemyr2, na.action = na.exclude)
 
-plot_summs(fit1,fit2,fit3,fit4, ci_level = 0.9, model.names = c("AM Yr1","AM Yr2","EM Yr 1","EM Yr 2"))+
+plot_summs(fit1,fit2,fit3,fit4, ci_level = 0.8, model.names = c("AM Yr1","AM Yr2","EM Yr 1","EM Yr 2"))+
   ggtitle("Plot richness, stratified by plot type and year")+
   theme_grey(base_size = 22)
 
@@ -275,7 +275,7 @@ fit2 = lm(alpha~ .,scaledalphaamyr2, na.action = na.exclude)
 fit3 = lm(alpha~ .,scaledalphaemyr1, na.action = na.exclude)
 fit4 = lm(alpha~ .,scaledalphaemyr2, na.action = na.exclude)
 
-plot_summs(fit1,fit2,fit3,fit4, ci_level = 0.9, 
+plot_summs(fit1,fit2,fit3,fit4, ci_level = 0.8, 
            model.names = c("AM Yr1","AM Yr2","EM Yr 1","EM Yr 2"))+
   ggtitle("Plot richness, stratified by plot type and year, plots less then 20% invaded")
 
@@ -359,7 +359,7 @@ fit3 = lm(alpha~ inv+am,scaledalphaemyr1uninv, na.action = na.exclude)
 fit4 = lm(alpha~ inv+am,scaledalphaemyr2uninv, na.action = na.exclude)
 
 
-plot_summs(fit1,fit2,fit3,fit4, ci_level = 0.9, 
+plot_summs(fit1,fit2,fit3,fit4, ci_level = 0.8, 
            model.names = c("Yr1 invaded", "Yr2 invaded", "Yr1 uninvaded", "Yr2 uninvaded"))+
   ggtitle("Plot richness, EM plots only")+
   theme_grey(base_size = 22)
@@ -396,7 +396,7 @@ fit3 = lm(abundance~ inv+am,scaledabundemyr1uninv, na.action = na.exclude)
 fit4 = lm(abundance~ inv+am,scaledabundemyr2uninv, na.action = na.exclude)
 
 
-plot_summs(fit1,fit2,fit3,fit4, ci_level = 0.9, 
+plot_summs(fit1,fit2,fit3,fit4, ci_level = 0.8, 
            model.names = c("Yr1 invaded", "Yr2 invaded", "Yr1 uninvaded", "Yr2 uninvaded"))+
   ggtitle("Plot abundance, EM plots only")+
   theme_grey(base_size = 22)

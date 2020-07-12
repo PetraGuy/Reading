@@ -89,8 +89,43 @@ ggplot(data, aes(x=numplots))+
   ggtitle(title)+
   scale_y_continuous(name = "number of woods", breaks = seq(0,20,2))+
   scale_x_continuous(name = "number of plots",breaks = seq(0,16,1))
-  
 
+#################################################
+
+#start from emplots above and see how many plots there are in each year when inv removed or not
+
+yr1inv = emplotssht%>%filter(Yr == 1)%>%group_by(Yr,Site)%>%summarise(length(Site))
+yr1uninv = emplotssht%>%filter(Yr == 1)%>%filter(percentinvcover<0.2)%>%
+  group_by(Yr,Site)%>%summarise(length(Site))
+
+yr2inv = emplotssht%>%filter(Yr == 2)%>%group_by(Yr,Site)%>%summarise(length(Site))
+yr2uninv = emplotssht%>%filter(Yr == 2)%>%filter(percentinvcover<0.2)%>%
+  group_by(Yr,Site)%>%summarise(length(Site))
+
+#rename the cols
+yr1inv = yr1inv%>%dplyr::rename(numplots = "length(Site)")
+yr2inv = yr2inv%>%dplyr::rename(numplots = "length(Site)")
+yr1uninv = yr1uninv%>%dplyr::rename(numplots = "length(Site)")
+yr2uninv = yr2uninv%>%dplyr::rename(numplots = "length(Site)")
+
+#add id col
+yr1inv$id = "yr1inv"
+yr1uninv$id = "yr1uninv"
+yr2inv$id = "yr2inv"
+yr2uninv$id = "yr2uninv"
+
+df = rbind(yr1inv,yr1uninv,yr2inv,yr2uninv)
+num1 = nrow(yr1inv)
+num2 = nrow(yr1uninv)
+num3 = nrow(yr2inv)
+num4 = nrow(yr2uninv)
+
+ggplot(df, aes(x = id, y = numplots)) + 
+  geom_boxplot() +
+  annotate("text", x = 1, y = 15, label = num1)+
+  annotate("text", x = 2, y = 15, label = num2)+
+  annotate("text", x = 3, y = 15, label = num3)+
+  annotate("text", x = 4, y = 15, label = num4)
 
 ############################################################################################
 
