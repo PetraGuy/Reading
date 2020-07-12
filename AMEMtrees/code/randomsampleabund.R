@@ -87,6 +87,7 @@ getrichness = function(plots,site,yr){
   varplots = filter(varplots, Plot%in% plots)            # the other vars for the site
   varsums = apply(varplots[-c(1,2,3,4,10,11)],2,sum)
   row = c(numherbs,varsums)
+  row = 
   return(row)
 }
 
@@ -117,18 +118,7 @@ getsamples = function(siteslist,yr){
   df = data.frame(matrix(ncol = 9,nrow = length(siteslist)))
   colnames(df)= c("alpha","abundance","propAMtree", "Propinvtree",
                   "lba","som","propAMcover","propInvcover","pH2")
-  for (n in 1:length(siteslist)){
-    site = siteslist[[n]]
-    if (nrow(site)>5){
-      thisrow = getaves(site,yr) # get data for random resample of 5 rows
-      df[n,] = thisrow
-    } else if (nrow(site)==5){
-      site = siteslist[[n]][[1]][[1]]
-      plots = siteslist[[n]][[2]]
-      thisrow = getrichness(plots,site,yr)
-      df[n,] = thisrow
-    }
-  }
+    
   df = df[!apply(df, 1, function(x) all(x == 0)), ]
   return(df)
 }
@@ -143,8 +133,8 @@ getfits = function(data){
   inv = scaled$Propinvtree+scaled$propInvcover
   am = scaled$propAMtree+scaled$propAMcover
   modeldata = as.data.frame(cbind(data$abundance,inv,am))
-  modeldata = modeldata%>%dplyr::rename(alpha = V1)
-  fit = lm(alpha ~ . ,modeldata, na.action = na.exclude) 
+  modeldata = modeldata%>%dplyr::rename(abund = V1)
+  fit = lm(abund ~ . ,modeldata, na.action = na.exclude) 
   summary(fit)$r.squared
   return(fit)
 }
@@ -170,3 +160,36 @@ plot_summs(model1,model2,model3,model4,model5,model6,ci_level = 0.8,
            model.names = c("yr1,inv0.1","yr1,inv0.2","yr1,inv0.3","yr2,inv0.1","yr2,inv0.2","yr3,inv0.3"))+
   ggtitle("Site abundance EM plots only")+
   theme_grey(base_size = 22)
+
+###################################
+#just look at richness/abund vs amtree/shrubs
+
+
+trimmed = data[-c(2,5,6,9)] #this leaves richnes, in and am
+# scaled =  apply(trimmed[,-1],2, rescale)         #do we need to scale when is%cover?
+# scaled = as.data.frame(cbind(data$alpha,scaled))
+inv = trimmed$Propinvtree+trimmed$propInvcover
+am = trimmed$propAMtree+trimmed$propAMcover
+modeldata = as.data.frame(cbind(data$alpha,inv,am))
+modeldata = modeldata%>%dplyr::rename(alpha = V1)
+fit = lm(alpha ~am,modeldata, na.action = na.exclude) 
+ggplot(modeldata, aes(x = am, y = alpha))+
+  geom_point()+
+  geom_smooth(method = lm, se = F)
+  
+
+
+trimmed = data[-c(1,5,6,9)] #this leaves abund, in and am
+# scaled =  apply(trimmed[,-1],2, rescale)         #do we need to scale when is%cover?
+# scaled = as.data.frame(cbind(data$alpha,scaled))
+inv = trimmed$Propinvtree+trimmed$propInvcover
+am = trimmed$propAMtree+trimmed$propAMcover
+modeldata = as.data.frame(cbind(data$abundance,inv,am))
+modeldata = modeldata%>%dplyr::rename(abund = V1)
+fit = lm(abund ~ am ,modeldata, na.action = na.exclude) 
+summary(fit)$r.squared
+ggplot(modeldata, aes(x = am, y = abund))+
+  geom_point()+
+  geom_smooth(method = lm, se = F)
+
+
