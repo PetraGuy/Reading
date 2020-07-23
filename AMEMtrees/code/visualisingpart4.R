@@ -59,7 +59,7 @@ emplots = filter(woods, shortcodes %in% em)
 
 #######################################################################################
 #if we're interested in looking at em plots, because in prev models
-#am shrub cover NOT important in AM plots, nned to see how many there are
+#am shrub cover NOT important in AM plots, need to see how many there are
 #in each wood - different nums of plots is an issue for models at site level
 #split by year and see how many plots in each wood
 
