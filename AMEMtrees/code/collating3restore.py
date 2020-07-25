@@ -34,7 +34,7 @@ treesam = treescomplete[treescomplete['ms']=='am']
 amtreesdbhcounts = treesam.groupby(['site','plot','Yr'])['dbhcounts'].sum().to_frame().reset_index()
 
 #repeat for invasives
-treesinv = treescomplete[treescomplete['flag']==1] 
+treesinv = treescomplete[treescomplete['flag']==2] 
 invtreesdbhcounts = treesinv.groupby(['site','plot','Yr'])['dbhcounts'].sum().to_frame().reset_index()
 
 #join the above 3 dfs.
@@ -106,10 +106,10 @@ amshrubcover = amshrub.groupby(['Site','Plot','Yr'])['cover'].sum().to_frame().r
 
 herbcover = herbflora.groupby(['Site','Plot','Yr'])['cover'].sum().to_frame().reset_index() #amount am shrub cover per plot
 
-invshrub = shrubflora[shrubflora['flag']==1]
+invshrub = shrubflora[shrubflora['flag']==2]
 invshrubcover = invshrub.groupby(['Site','Plot','Yr'])['cover'].sum().to_frame().reset_index() #amount inv shrub per plot
 
-invherb = herbflora[herbflora['flag']==1]
+invherb = herbflora[herbflora['flag']==2]
 invherbcover = invherb.groupby(['Site','Plot','Yr'])['cover'].sum().to_frame().reset_index() #amount inv herb per plot
 
 cover = pd.merge(totalshrubcover, amshrubcover, on = ['Site','Plot','Yr'],how ='left')

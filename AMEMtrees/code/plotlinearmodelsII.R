@@ -162,7 +162,7 @@ plot_summs(amyr1,amyr2,emyr1,emyr2, ci_level = 0.8, model.names = c("AM Yr1","AM
 
 #just uninvaded plots
 
-uninvaded = woods%>%filter(inv<0.2)  #4am/em/yr - univaded richness
+uninvaded = woods%>%filter(alpha>1)  #4am/em/yr - univaded richness
 
 
 amplotsyr1 = uninvaded%>%filter(NVCtype == -1 & Yr ==1) 
@@ -176,7 +176,7 @@ emyr1= lm(alpha~ inv+am,emplotsyr1, na.action = na.exclude)
 emyr2 = lm(alpha~ inv+am,emplotsyr2, na.action = na.exclude)
 
 plot_summs(amyr1,amyr2,emyr1,emyr2, ci_level = 0.8, model.names = c("AM Yr1","AM Yr2","EM Yr 1","EM Yr 2"))+
-  ggtitle("Plot richness, stratified by plot type and year, plots less then 20% invaded")+
+  ggtitle("Plot richness, stratified by plot type and year")+
   theme_grey(base_size = 18)
 
 summary(emyr2)$r.squared
@@ -215,25 +215,115 @@ ggplot(phdata,aes(x = as.factor(plottype), y = pH))+geom_violin(aes(fill = as.fa
 ################################################################
 
 #finally, just take out em plots and inv and amount am combined
-data = uninvaded  #4am/em/yr - univaded richness
+#compare invaded/uninvaded
+uninvaded = woods%>%filter(alpha > 21 ) #4am/em/yr - univaded richness
 
+amplotsyr1 = uninvaded%>%filter(NVCtype == -1 & Yr ==1) 
+amplotsyr2 = uninvaded%>%filter(NVCtype == -1 & Yr ==2)
+emplotsyr1 = uninvaded%>%filter(NVCtype == 1 & Yr ==1) 
+emplotsyr2 = uninvaded%>%filter(NVCtype == 1 & Yr ==2) 
 
-emplotsyr1 = data%>%filter(NVCtype == 1 & Yr ==1) 
-emplotsyr2 = data%>%filter(NVCtype == 1 & Yr ==2) 
+uamplotsyr1 = woods%>%filter(NVCtype == -1 & Yr ==1) 
+uamplotsyr2 = woods%>%filter(NVCtype == -1 & Yr ==2)
+uemplotsyr1 = woods%>%filter(NVCtype == 1 & Yr ==1) 
+uemplotsyr2 = woods%>%filter(NVCtype == 1 & Yr ==2) 
 
 fit1 = lm(alpha~ am,emplotsyr1, na.action = na.exclude)
 fit2 = lm(alpha~ am,emplotsyr2, na.action = na.exclude)
-fit3 = lm(herbcover~ am,emplotsyr1, na.action = na.exclude)
-fit4 = lm(herbcover~ am,emplotsyr2, na.action = na.exclude)
+fit3 = lm(alpha~ am,amplotsyr1, na.action = na.exclude)
+fit4 = lm(alpha~ am,amplotsyr2, na.action = na.exclude)
+fit5 = lm(alpha~ am,uemplotsyr1, na.action = na.exclude)
+fit6 = lm(alpha~ am,uemplotsyr2, na.action = na.exclude)
+fit7 = lm(alpha~ am,uamplotsyr1, na.action = na.exclude)
+fit8 = lm(alpha~ am,uamplotsyr2, na.action = na.exclude)
 
 
-plot_summs(fit1,fit2,fit3,fit4, ci_level = 0.8, 
-           model.names = c("Yr1 richness", "Yr2 richness", "Yr1 abundance", "Yr2 abundance"))+
-  ggtitle("EM uninvaded plots only")+
-  theme_grey(base_size = 22)
+plot_summs(fit1,fit2,fit3,fit4, fit5,fit6,fit7,fit8, ci_level = 0.8,
+           colors = 'Rainbow',
+           model.names = c("Uninvaded Yr1 EM", "Uninvaded Yr2 EM", 
+                           "Uninvaded Yr1 AM", "Uninvaded Yr2 AM","Invaded Yr1 EM", "Invaded Yr2 EM", 
+                           "Invaded Yr1 AM", "Invaded Yr2 AM"))+
+  labs(title = "Effect of amount of AM trees and shrubs on herb species richness",
+       subtitle = "alpha > uq")+
+  theme_grey(base_size = 18)+
+  theme(legend.position = "bottom")
+  
+  
 
-summary(fit4)$r.squared
+summary(fit8)$r.squared
 ######################
+#just do stuff of interest
+
+#finally, just take out em plots and inv and amount am combined
+#compare invaded/uninvaded
+uninvaded1 = woods%>%filter(percentinvherb < 0.85 )#4am/em/yr - univaded richness
+uninvaded2 = woods%>%filter(percentinvshrub<0.51)
+uninvaded3 = woods%>%filter(percentinvtree<0.13)
+uninvaded4 = woods%>%filter(inv<1.34)
+uninvaded5 = woods%>%filter(inv<2.07)
+
+
+emplotsyr1herb = uninvaded1%>%filter(NVCtype == 1 & Yr ==1) 
+emplotsyr2herb = uninvaded1%>%filter(NVCtype == 1 & Yr ==2)
+emplotsyr1shrub = uninvaded2%>%filter(NVCtype == 1 & Yr ==1) 
+emplotsyr2tree = uninvaded3%>%filter(NVCtype == 1 & Yr ==2)
+emplotsyr1all = uninvaded4%>%filter(NVCtype == 1 & Yr ==1) 
+emplotsyr2all = uninvaded5%>%filter(NVCtype == 1 & Yr ==1)
+
+####
+
+fit1 = lm(alpha~ am,emplotsyr1herb, na.action = na.exclude)
+fit2 = lm(alpha~ am,emplotsyr2herb, na.action = na.exclude)
+fit3 = lm(alpha~ am,emplotsyr1shrub, na.action = na.exclude)
+fit4 = lm(alpha~ am,emplotsyr2tree, na.action = na.exclude)
+fit5 = lm(alpha~ am,emplotsyr1all, na.action = na.exclude)
+fit6 = lm(alpha~ am,emplotsyr2all, na.action = na.exclude)
+
+
+
+plot_summs(fit1,fit2,fit3,fit4,fit5,fit6, ci_level = 0.8,
+           colors = 'Rainbow',
+           model.names = c('invherb<uq, yr1','invherb<uq yr2','invshrub<lq yr1','invtree<lq yr2','allinv<lq yr1','allinv<uq yr1'))+
+  labs(title = "Effect of amount of AM trees and shrubs on herb species richness",
+       subtitle = "Emplots only")+
+    theme_grey(base_size = 18)+
+  theme(legend.position = "bottom")
+
+
+##########################################
+uninvaded1 = woods%>%filter(percentinvherb < 0.85 )#4am/em/yr - univaded richness
+uninvaded2 = woods%>%filter(percentinvshrub<0.51)
+uninvaded3 = woods%>%filter(percentinvtree<0.13)
+uninvaded4 = woods%>%filter(inv<1.34)
+uninvaded5 = woods%>%filter(inv<2.07)
+
+amplotsyr1herb = uninvaded1%>%filter(NVCtype == -1 & Yr ==1) 
+amplotsyr2herb = uninvaded1%>%filter(NVCtype == -1 & Yr ==2)
+amplotsyr1shrub = uninvaded2%>%filter(NVCtype == -1 & Yr ==1) 
+amplotsyr2tree = uninvaded3%>%filter(NVCtype == -1 & Yr ==1)
+amplotsyr1all = uninvaded4%>%filter(NVCtype == -1 & Yr ==2) 
+amplotsyr2all = uninvaded5%>%filter(NVCtype == -1 & Yr ==1)
+
+####
+
+fit1 = lm(alpha~ am,amplotsyr1herb, na.action = na.exclude)
+fit2 = lm(alpha~ am,amplotsyr2herb, na.action = na.exclude)
+fit3 = lm(alpha~ am,amplotsyr1shrub, na.action = na.exclude)
+fit4 = lm(alpha~ am,amplotsyr2tree, na.action = na.exclude)
+fit5 = lm(alpha~ am,amplotsyr1all, na.action = na.exclude)
+fit6 = lm(alpha~ am,amplotsyr2all, na.action = na.exclude)
+
+
+
+plot_summs(fit1,fit2,fit3,fit4,fit5,fit6, ci_level = 0.8,
+           colors = 'Rainbow',
+           model.names = c('invherb<uq, yr1','invherb<uq yr2','invshrub<lq yr1','invtree<lq yr1','allinv<lq yr2','allinv<uq yr1'))+
+  labs(title = "Effect of amount of AM trees and shrubs on herb species richness",
+       subtitle = "AM plots only")+
+  theme_grey(base_size = 18)+
+  theme(legend.position = "bottom")
+
+###################################################
 
 #as above for abundance
 #stratify the data into am and em plots, start from scaled  
