@@ -1,6 +1,11 @@
-#start again with wrangling
-# 1 get proportions for am/total and invasives/total
-#start with Trees.csv, tidy it up a bit
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Sep 27 16:22:03 2020
+
+@author: petra
+"""
+#altering collating data for sensitivity analysis
+#change input full from groyndfloragroundflora to sensitivity1/2/3
 
 import pandas as pd
 
@@ -48,14 +53,15 @@ dbhcounts = dbhcounts.rename(columns={'dbhcounts':'invdbhcounts'})
 dbhcounts['percentamtree']=dbhcounts['amdbhcounts']/dbhcounts['totaldbh'] #amount am trees
 dbhcounts['percentinvtree']=dbhcounts['invdbhcounts']/dbhcounts['totaldbh'] #amount inv trees
 dbhcounts = dbhcounts.rename(columns = {'site':'Site','plot':'Plot'})
+
 #drop cols not required
 
 treedata = dbhcounts.drop(['totaldbh','amdbhcounts','invdbhcounts'], axis = 1) #final df of tree data, %inv and %am
 
 ##############################################################################
 # now get percent am cover from the shrubs, import ground cover and separate in herbs and shrubs
-
-floralist = pd.read_csv('../data/grndspeciesfullinfoWS.csv')# species details
+#read in sensitivty1 or 2 or 3 for crat = AM, hed = null or ilex = null
+floralist = pd.read_csv('../data/sensitivity3.csv')# species details 
 groundflora = pd.read_csv('../data/GroundFlora.csv')#flora by plot
 
 #amend the cover because if cover <1 it needs cover *100, so 1 = 100%
@@ -139,6 +145,7 @@ cover['percentinvherb'] = cover['invherbcover']/cover['herbcover']
 #drop cols not needed
 coverdata = cover.drop(['totalshrubcover','amshrubcover','invshrubcover','invherbcover'],axis=1)
 ####################################################################
+##################################################################
 
 #for invasives analysis
 invherbcoverspecies = invherb.groupby(['Site','Plot','Yr','Amalgams','species'])['cover'].sum().to_frame().reset_index()
@@ -151,8 +158,7 @@ invasives = pd.merge(invherbcoverspecies,invasiveshrubcoverspecies, on=['Site','
 herbcoverinvasive = herbflora.groupby(['Site','Plot','Yr','species'])['cover'].sum().to_frame().reset_index()
 shrubcoverinvasive = shrubflora.groupby(['Site','Plot','Yr','species'])['cover'].sum().to_frame().reset_index()
 
-
-#combine the herb and shrub #probably wont use this, just keep herns and shrubs separate
+#combine the herb and shrub #probably wont use this, just keep herbs and shrubs separate
 allflora = pd.merge(herbcoverinvasive,shrubcoverinvasive, on = ['Site','Plot','Yr'], how = 'left')
 
 #see below for merge to get NVC's etc
@@ -176,7 +182,7 @@ shrub_cover_richness = pd.merge(shrubcoverinvasive,herbrichness, on = ['Site','P
 shrub_cover_richness["alpha"] = shrub_cover_richness["alpha"].fillna(0)
 
 shrub_cover_richness.to_csv('../data/shrub_cover_richness.csv')
-
+#################################################################
 #################################################################
 
 #the rest of the data, tidy and longify
@@ -226,7 +232,7 @@ alldata = pd.merge(alldata,nvc, on = ['Site','Plot','Yr'], how = 'left')
 #######################################################################
 
 
-alldata.to_csv('../data/all2data.csv', index = False)
+alldata.to_csv('../data/all2datasens3.csv', index = False)
 
 ##########################################################################
 

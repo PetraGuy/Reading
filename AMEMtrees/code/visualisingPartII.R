@@ -42,7 +42,7 @@ woods[is.na(woods)] <- 0
 woods['am'] = woods[5]+woods[8]
 woods['inv'] = woods[6]+woods[9]+woods[10]
 
-woods = woods%>%mutate(NVCtype = if_else (shortcodes %in% amcodes, -1,1))
+ woods = woods%>%mutate(NVCtype = if_else (shortcodes %in% amcodes, -1,1))
 
 
 amplots = woods%>%filter(NVCtype == -1)
@@ -61,7 +61,9 @@ df2 = cbind(pHem,index)
 thedata = rbind(df1,df2)
 
 
-ggplot(thedata,aes(x = index, y = pH))+geom_violin(aes(fill = index))
+ggplot(thedata,aes(x = index, y = pH))+geom_violin(aes(fill = index))+
+  xlab('mycorrhizal status of plot type')+
+  theme(text=element_text(size=21))
 
 #look at richness and abundance of em and am plots
 #herb cover
@@ -109,7 +111,9 @@ df1 = df1%>%mutate(bin = cut_width(pH,width = 0.5, boundary = 0))
 g1 = ggplot(data = na.omit(df1), aes(x=bin, y=value) ) +
   geom_boxplot(fill="#69b3a2") +
   xlab("pH")+
- ylab('alpha diversity')
+ ylab('alpha diversity')+
+  theme(text=element_text(size=21))
+  
 
 
 index = rep('abund',nrow(dfabund2))

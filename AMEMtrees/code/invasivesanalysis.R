@@ -5,38 +5,91 @@ library(tidyr)
 
 setwd("C:/dev/code/Reading/AMEMtrees/Code")
 
-allflora = read.csv('../data/allfloracomp.csv')
+
+#allflora = read.csv('../data/allfloracomp.csv')
+herbs = read.csv('../data/herb_cover_richness.csv')
+shrubs = read.csv('../data/shrub_cover_richness.csv')
 
 #take out just plots where cover of a species >50%
+#invaded = herbs_and_shrubs%>%filter(cover > 50)
 
-invaded = allflora%>%filter(cover_x > 50)
+#select required cols from invaded df
+herbdata = herbs%>%dplyr::select(c(species,cover,alpha))
 
-#look at effect size per species for richness vs cover
-data = invaded%>%dplyr::select(c(species_x,cover_x,alpha))
+#create lm for each species of richness~cover
+#models = data%>%group_by(species_x)%>%do(model = lm(alpha ~ cover_x, data = ., na.action = na.exclude))
+#you need several occurrances to plot a line. Two values for cover not very convincing
+#so delete those with less than 5 points
+tally = herbdata%>%group_by(species)%>%tally()
+suff_points = tally%>%filter(n > 100)
 
-#get rid of na
-data = data%>%drop_na(alpha)
+#take just these species from herbdata and do correlations with them
+req_species = suff_points$species
+reduced_herbs = filter(herbdata, species %in% req_species)
 
-models = data%>%group_by(species_x)%>%do(model = lm(alpha ~ cover_x, data = ., na.action = na.exclude))
+#correlations on the species where there are many occurance
+cors = reduced_herbs%>%group_by(species)%>%summarise(spearman = cor(cover,alpha, method = "spearman"))
 
-#get the coefficients
+#remove the ones where correlation is small
+#just take top and bottom 8 
+#top = top_n(cors,8)
+bottom = cors%>%filter(spearman < 0)
+#largestcors = rbind(top,bottom)
+
+
+#get these species from the herbdata and look at graphs
+largestcors_species = largestcors$species
+largestcors_data = filter(herbdata,species %in% largestcors_species)
+largestcors_data = merge(largestcors_data,largestcors)
+
+#plot these
+ggplot(largestcors_data, aes(cover,alpha))+
+  geom_point()+
+  geom_smooth(method = 'lm')+
+  facet_wrap(~species)+
+  stat_cor()
+
+
+
+################################
+
+#examine some plots
+allrhodis = shrubs%>%filter(species == 'Rhododendron ponticum')
+ggplot(allrhodis,aes(cover,alpha))+
+  geom_point()+
+  geom_smooth(method='lm')
+
+allbracken = herbs%>%filter(species == 'Pteridium aquilinum')
+ggplot(allbracken,aes(cover,alpha))+
+  geom_point()+
+  geom_smooth(method='lm')
+
+#create lm for each species of richness~cover
+models = herbdata%>%group_by(species)%>%do(model = lm(alpha ~ cover, data = ., na.action = na.exclude))
+
+#get the coefficients in the lms
 coefs = vector()
 for (i in 1:46) {
   coefs[i] = models[[2]][[i]]$coefficients[[2]]
 }
 
-#get the species
-species = as.data.frame(models[[1]])
+ggplot(herbdata, aes(cover,alpha, group = species))+
+  geom_point()+
+  geom_smooth(method = lm)
 
+#get the species and combine with coefs to get df of a coef for each species
+species = as.data.frame(models[[1]])
 df = as.data.frame(cbind(species,coefs))
 df = df%>%drop_na(coefs)
 df = df%>%arrange(coefs)
 index = seq.int(from = 1, to = 32)
 df['index'] = index
+
+#in this format can make a nice plot
 df2 <- data.frame(df[,-1], row.names=df[,1])
 
 #to plot, add x values and use species as labels?
-
+#plot is change in richness for 1% change in cover
 ggplot(df2, aes(x = index, y = coefs, label = rownames(df2)))+
   geom_point(colour = 'red', size = 5)+
   geom_text(angle = 90)+
@@ -48,11 +101,12 @@ ggplot(df2, aes(x = index, y = coefs, label = rownames(df2)))+
   xlab('')
 
 #how many plots are affected by each species though?
+#get num of plots for each species
 df = df%>%dplyr::rename( species_x = 'models[[1]]')
-
 numplots = invaded%>%group_by(species_x)%>%summarise(count=n())
 combined = merge(df,numplots, by = 'species_x', type = 'left')
 
+#multiply numplots by coef
 combined['overall'] = combined['coefs']*combined['count']
 
 #now look at graph again
@@ -61,7 +115,9 @@ index = seq.int(from = 1, to = 32)
 combined['index'] = index
 combinedherb <- data.frame(combined[,-1], row.names=combined[,1])
 
-
+#the response is now change in richness for 1% chnage in cover over all plots
+#that contain that species. Its a cumulative change in richness, some species occur
+#in many plots. so we are counting the same species multiple times in this richness change
 ggplot(combinedherb, aes(x = index, y = overall, label = rownames(combinedherb)))+
   geom_point(colour = 'red', size = 5)+
   geom_text(angle = 90)+

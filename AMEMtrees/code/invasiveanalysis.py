@@ -9,6 +9,6 @@ Created on Wed Jul 22 11:47:19 2020
 
 import pandas as pd
 
-invasives =  pd.read_csv('../data/invasivecover.csv')
-herbrichness = pd.read_csv('../data/herbrichness.csv')
 
+treesinplots = pd.read_csv('../data/TreesByPlot.csv')#trees by 
+shrubsinplots = pd.read_csv('../data/shrub_cover_richness.csv')
