@@ -207,7 +207,7 @@ plot_summs(model1, model3,model2,model4, ci_level = 0.9,
   xlab('standardised regression coefficient')+
   ylab('')
 ################################################
-#just doing this part now, run stelisnt and samples 
+#just doing this part now, run sitelisnt and samples 
 #change to yr 2, rerun, # change to emplots etc..
 #to plot linear models of data
 am1data = as.data.frame(samples[,c(1,5)])

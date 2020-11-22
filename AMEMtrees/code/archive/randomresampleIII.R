@@ -16,8 +16,7 @@
 #lba is sum, pH is ave, SOM is ave, am is sum
 #This script collects LBA SOM etc and AMand EM plots if you change getsites function.
 #if inv level = 1 
-
-#This is funal version for multivvariateplot
+#This starts as duplicate of IV, then reoving expl vars and just using AMplot
 
 setwd("C:/dev/code/Reading/AMEMtrees/Code")
 library(dplyr)
@@ -43,7 +42,7 @@ devtools::install_github("jacob-long/jtools")
 
 
 #get data
-alldata = read.csv('../data/all2datasens1.csv')
+alldata = read.csv('../data/all2datasens3.csv') #from collatingdata.py
 herbs = read.csv('../data/herbs.csv')
 
 #response to pH is quadratic, therefore transform pH to pH2
@@ -101,12 +100,12 @@ getmode <- function(v) {
 }
 
 ##########################################
-#returns list of all sites for yr, invlevel where numplots per site >=5
+#retrns list of all sites for yr, invlevel where numplots per site >=5
 #change to am/emplots depending what you want
 #change to alpha or inv level filter depending what you want
 #with invlevel = 1 and alpha > invlevel, it means select by richness not invasion and alpha>1 means just take all sites. 
 getsites = function(yr, invlevel){
-  sites = amplots%>%filter(alpha >invlevel)%>%filter(Yr==yr)%>%group_by(Site)%>%group_split() 
+  sites = emplots%>%filter(alpha >invlevel)%>%filter(Yr==yr)%>%group_by(Site)%>%group_split() 
   reducedsites = compact(lapply(sites, deletesites))
   return(reducedsites)
   
@@ -128,7 +127,6 @@ getrichness = function(plots,site,yr){
 }
 
 ##############################################
-
 
 getaves = function(asite,yr){
   testdf = data.frame(matrix(ncol = 5,nrow=100))
@@ -171,13 +169,12 @@ getsamples = function(siteslist,yr){
 #notice, not scaled for just richness with prop am because propam already relative and between 0-1
 
 getfits = function(data){
-  #lose most of the columns, change here for how many vars required
-  trimmed = data[-c(6)] #this leaves richnes, in and am
-  scaled =  as.data.frame(apply(trimmed[-1],2, rescale))         #do we need to scale when is%cover?
-  modeldata = as.data.frame(cbind(data$alpha,scaled))
-  names(modeldata)[names(modeldata) == "data$alpha"] <- "alpha" # had to revert to base R for rename 
-  fit = lm(alpha ~ . ,modeldata, na.action = na.exclude)      #because dplyr rename stopped working
-  summary(fit)$adj.r.squared
+  trimmed = data[c(1,5)] #this leaves richnes, in and am
+  #scaled =  as.data.frame(apply(trimmed[-1],2, rescale))         #do we need to scale when is%cover?
+  #modeldata = as.data.frame(cbind(data$alpha,scaled))
+  #names(modeldata)[names(modeldata) == "data$alpha"] <- "alpha" # had to revert to base R for rename 
+  fit = lm(alpha ~ am ,trimmed, na.action = na.exclude)      #because dplyr rename stopped working
+  summary(fit)$r.squared
   return(fit)
 }
 ###############################################
@@ -198,12 +195,59 @@ model3 = runall(1,1)
 model4 = runall(2,1)
 
 
+model5 = runall(2,7)
+model6 = runall(2,12)
 
-
-plot_summs(model1, model2, ci_level = 0.9, 
-           model.names = c('Yr1 Emplots','Yr2 EMplots'))+
-  ggtitle("Site richness regression coefficients in EM plots for both survey years")+
+plot_summs(model1, model3,model2,model4, ci_level = 0.9, 
+           model.names = c('Yr1 EMplots','Yr1 Amplots','Yr2 EMplots','Yr2 AMplots'))+
+  ggtitle("Site richness in AM and EM plots for both survey years")+
   theme_grey(base_size = 18)+
   #theme(axis.text.y = element_blank(),
   #axis.ticks.y = element_blank())+
-   xlab('standardised regression coefficient')
+  xlab('standardised regression coefficient')+
+  ylab('')
+################################################
+#just doing this part now, run stelisnt and samples 
+#change to yr 2, rerun, # change to emplots etc..
+#to plot linear models of data
+am1data = as.data.frame(samples[,c(1,5)])
+am2data = as.data.frame(samples[,c(1,5)])
+em1data = as.data.frame(samples[,c(1,5)])
+em2data = as.data.frame(samples[,c(1,5)])
+
+#redo fit so can put data on graph
+
+
+ggplotRegression <- function (fit) {
+  
+    ggplot(fit$model, aes_string(x = names(fit$model)[2], y = names(fit$model)[1])) + 
+    geom_point() +
+    stat_smooth(method = "lm", col = "red") +
+    labs(title = paste("R2 = ",signif(summary(fit)$r.squared, 5),
+                       "Intercept =",signif(fit$coef[[1]],5 ),
+                       " Slope =",signif(fit$coef[[2]], 5),
+                       " P =",signif(round(summary(fit)$coef[2,4], 5),2)))+
+    xlab('proportion AM trees and shrubs')+
+    ylab('herb richness')+
+    annotate(geom="text", x=35, y=10, label="AM plots yr 1",
+             color="black")
+}
+
+data = am1data
+fit =  lm(alpha ~ am ,data, na.action = na.exclude) 
+gam1 = ggplotRegression(fit)
+
+data = am2data
+fit =  lm(alpha ~ am ,data, na.action = na.exclude) 
+gam2 = ggplotRegression(fit)
+
+data = em1data
+fit =  lm(alpha ~ am ,data, na.action = na.exclude) 
+gem1 = ggplotRegression(fit)
+
+data = em2data
+fit =  lm(alpha ~ am ,data, na.action = na.exclude) 
+gem2 = ggplotRegression(fit)
+
+library(gridExtra)
+grid.arrange(gam1,gam2,gem1,gem2,ncol = 2)

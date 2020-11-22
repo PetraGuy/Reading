@@ -19,72 +19,8 @@ plt.suptitle('') # that's what you're after
 plt.show()
 
 ####soil density
-soilden = pd.read_csv('../data/soil_density.csv')
-
-soilden.boxplot(column='normalised_wt',by='Site')
-title_boxplot = 'awesome title'
-plt.title( 'Soil Weights' )
-plt.suptitle('') # that's what you're after
-plt.show()
-
-soilden = pd.read_csv('../data/soil_density.csv')
-soilden.boxplot(column='normalised_wt',by='Site')
-title_boxplot = 'awesome title'
-plt.title( 'Soil Weights' )
-plt.suptitle('') # that's what you're after
-plt.show()
 
 
-####soil pH,C,N
-soilpHCN = pd.read_csv('../data/soilpHCN.csv')
-
-#PH across
-soilpHCN.boxplot(column='MSpHAcSite',by='MSAcSite')
-title_boxplot = 'awesome title'
-plt.title( 'Mountsorrel pH across site for different soil strata' )
-plt.suptitle('') # that's what you're after
-plt.show()
-soilpHCN.boxplot(column='BDpHAcSite',by='BDAcSite')
-title_boxplot = 'awesome title'
-plt.title( 'Buddon Wood pH across site for different soil strata' )
-plt.suptitle('') # that's what you're after
-plt.show()
-
-#N across
-soilpHCN.boxplot(column='MSNAcSite',by='MSAcSite')
-title_boxplot = 'awesome title'
-plt.title( 'Mountsorrel N across site for different soil strata' )
-plt.suptitle('') # that's what you're after
-plt.show()
-soilpHCN.boxplot(column='BDNAcSite',by='BDAcSite')
-title_boxplot = 'awesome title'
-plt.title( 'Buddon Wood N across site for different soil strata' )
-plt.suptitle('') # that's what you're after
-plt.show()
-
-#C across
-soilpHCN.boxplot(column='MSCAcSite',by='MSAcSite')
-title_boxplot = 'awesome title'
-plt.title( 'Mountsorrel C across site for different soil strata' )
-plt.suptitle('') # that's what you're after
-plt.show()
-soilpHCN.boxplot(column='BDCAcSite',by='BDAcSite')
-title_boxplot = 'awesome title'
-plt.title( 'Buddon Wood C across site for different soil strata' )
-plt.suptitle('') # that's what you're after
-plt.show()
-
-#C:N across
-soilpHCN.boxplot(column='MSpHAcStrata',by='MSAcStata')
-title_boxplot = 'awesome title'
-plt.title( 'Mountsorrel C:N across site for different soil strata' )
-plt.suptitle('') # that's what you're after
-plt.show()
-soilpHCN.boxplot(column='BDCNAcSite',by='BDAcSite')
-title_boxplot = 'awesome title'
-plt.title( 'Buddon Wood C:N across site for different soil strata' )
-plt.suptitle('') # that's what you're after
-plt.show()
 
 #pHdown
 soilpHCN.boxplot(column='MSpHDnStrata',by='MSDnStata')
@@ -134,182 +70,195 @@ plt.title( 'Buddon Wood C:N down soil strata for different locations' )
 plt.suptitle('') # that's what you're after
 plt.show()
 
-#soil comparison with all other sites
-soilpHCNAll= pd.read_csv('../data/allsoils.csv')
-
-soilpHCNAll.boxplot(column='pH',by='SITE')
-title_boxplot = 'awesome title'
-plt.title( 'Change in soil pH in  organic soil layer across all sites' )
-plt.suptitle('') # that's what you're after
-plt.show()
-soilpHCNAll.boxplot(column='N',by='SITE')
-title_boxplot = 'awesome title'
-plt.title( 'Change in soil N in  organic soil layer across all sites' )
-plt.suptitle('') # that's what you're after
-plt.show()
-soilpHCNAll.boxplot(column='C',by='SITE')
-title_boxplot = 'awesome title'
-plt.title( 'Change in soil C in  organic soil layer across all sites' )
-plt.suptitle('') # that's what you're after
-plt.show()
-soilpHCNAll.boxplot(column='CN',by='SITE')
-title_boxplot = 'awesome title'
-plt.title( 'Change in soil C:N in  organic soil layer across all sites' )
-plt.suptitle('') # that's what you're after
-plt.show()
-
-means = soilpHCNAll.groupby('SITE').mean()
-
-soilpHCNAll.boxplot(column='pH')
-title_boxplot = 'awesome title'
-plt.title( 'Change in soil pH in  organic soil layer across all sites' )
-plt.suptitle('') # that's what you're after
-plt.plot(1,5.12, marker = '*')
-plt.show()
 
 
-soilpHCNAll.boxplot(column='N')
-title_boxplot = 'awesome title'
-plt.title( 'Change in soil N in  organic soil layer across all sites' )
-plt.suptitle('') # that's what you're after
-plt.plot(1,0.46,marker = '*')
-plt.show()
-
-soilpHCNAll.boxplot(column='C')
-title_boxplot = 'awesome title'
-plt.title( 'Change in soil C in  organic soil layer across all sites' )
-plt.suptitle('') # that's what you're after
-plt.plot(1,7.48,marker = '*')
-plt.show()
-
-soilpHCNAll.boxplot(column='CN')
-title_boxplot = 'awesome title'
-plt.title( 'Change in soil C:N in  organic soil layer across all sites' )
-plt.suptitle('') # that's what you're after
-plt.plot(1,15.99,marker = '*')
-plt.show()
-
-soilpHCNAll.boxplot(column='weight')
-title_boxplot = 'awesome title'
-plt.title( 'Change in soil C:N in  organic soil layer across all sites' )
-plt.suptitle('') 
-plt.plot(1,107.21,marker = '*')# that's what you're after
-plt.show()
-
-###############
+############### start ###
 #redoing some charts to correct labelling, but now using new neater
 #data file 
 data =  pd.read_csv('../data/AllSoilData.csv')
-#for fig 4 of report, use only MSs and BDs
 
-#sites = ['BDs','MSs']
-#sites = data[data.site.isin(sites)]
+#for fig 5 of report, use only MSs and BDs
 
 siteMS = data[data['site']=='MSs']
 siteBD = data[data['site']=='BDs']
 #boxplot for each layer
 siteMS.boxplot(column='pH',by='LAYER')
 title_boxplot = 'awesome title'
-plt.title( 'Mountsorrel pH across soil core' )
+plt.title( 'pH' )
 plt.suptitle('') # that's what you're after
+plt.ylim(3,7)
 plt.show()
+
 siteBD.boxplot(column='pH',by='LAYER')
 title_boxplot = 'awesome title'
-plt.title( 'Buddon Wood pH across soil core' )
-plt.suptitle('') # that's what you're after
+plt.title( 'pH' )
+plt.suptitle('') 
+plt.ylim(3,7)
 plt.show()
 
 siteMS.boxplot(column='N',by='LAYER')
 title_boxplot = 'awesome title'
-plt.title( 'Mountsorrel N across soil core' )
-plt.suptitle('') # that's what you're after
+plt.title( 'N' )
+plt.suptitle('') 
+plt.ylim(0,2)
 plt.show()
 siteBD.boxplot(column='N',by='LAYER')
 title_boxplot = 'awesome title'
-plt.title( 'Buddon Wood N across soil core' )
-plt.suptitle('') # that's what you're after
+plt.title( 'N' )
+plt.suptitle('')
+plt.ylim(0,2)
 plt.show()
 
 siteMS.boxplot(column='C',by='LAYER')
 title_boxplot = 'awesome title'
-plt.title( 'Mountsorrel C across soil core' )
-plt.suptitle('') # that's what you're after
+plt.title( 'C' )
+plt.suptitle('')
+plt.ylim(0,40)
 plt.show()
 siteBD.boxplot(column='C',by='LAYER')
 title_boxplot = 'awesome title'
-plt.title( 'Buddon Wood C across soil core' )
-plt.suptitle('') # that's what you're after
+plt.title( 'C' )
+plt.suptitle('') 
+plt.ylim(0,40)
 plt.show()
 
 siteMS.boxplot(column='CN',by='LAYER')
 title_boxplot = 'awesome title'
-plt.title( 'Mountsorrel C:N across soil core' )
-plt.suptitle('') # that's what you're after
+plt.title( 'C:N' )
+plt.suptitle('') 
+plt.ylim(5,20)
 plt.show()
 siteBD.boxplot(column='CN',by='LAYER')
 title_boxplot = 'awesome title'
-plt.title( 'Buddon Wood C:N across soil core' )
-plt.suptitle('') # that's what you're after
+plt.title( 'C:N' )
+plt.suptitle('')
+plt.ylim(5,20)
 plt.show()
 
 ####
-#redo plotdatas for fig 6, all sites
+
+
+##fig 6
+
+#sites = ['BDs','MSs']
+#stratasites = data[data.site.isin(sites)]
+
+siteMS.boxplot(column = 'pH', by = 'location')
+#title_boxplot = 'awesome title'
+plt.title( 'pH' )
+plt.suptitle('')
+plt.ylim(3,7)
+plt.show()
+
+siteMS.boxplot(column = 'C', by = 'location')
+#title_boxplot = 'awesome title'
+plt.title( 'C' )
+plt.suptitle('')
+plt.ylim(0,40)
+plt.show()
+
+siteMS.boxplot(column = 'N', by = 'location')
+#title_boxplot = 'awesome title'
+plt.title( 'N' )
+plt.suptitle('')
+plt.ylim(0,2)
+plt.show()
+
+siteMS.boxplot(column = 'CN', by = 'location')
+#title_boxplot = 'awesome title'
+plt.title( 'CN' )
+plt.suptitle('')
+plt.show()
+
+
+siteBD.boxplot(column = 'pH', by = 'location')
+#title_boxplot = 'awesome title'
+plt.title( 'pH' )
+plt.suptitle('')
+plt.ylim(3,7)
+plt.show()
+
+siteBD.boxplot(column = 'C', by = 'location')
+#title_boxplot = 'awesome title'
+plt.title( 'C' )
+plt.suptitle('')
+plt.ylim(0,40)
+plt.show()
+
+siteBD.boxplot(column = 'N', by = 'location')
+#title_boxplot = 'awesome title'
+plt.title( 'N' )
+plt.suptitle('')
+plt.ylim(0,2)
+plt.show()
+
+siteBD.boxplot(column = 'CN', by = 'location')
+#title_boxplot = 'awesome title'
+plt.title( 'CN' )
+plt.suptitle('')
+plt.ylim(5,20)
+plt.show()
+
+################################################
+#redo plotdatas for fig 7, all sites
 
 data.boxplot(column='pH',by='site')
 title_boxplot = 'awesome title'
-plt.title( 'Change in soil pH in  organic soil layer for all sites' )
+plt.title( 'pH' )
 plt.suptitle('') # that's what you're after
 plt.show()
 data.boxplot(column='N',by='site')
 title_boxplot = 'awesome title'
-plt.title( 'Change in soil N in  organic soil layer for all sites' )
+plt.title( 'N' )
 plt.suptitle('') # that's what you're after
 plt.show()
 data.boxplot(column='C',by='site')
 title_boxplot = 'awesome title'
-plt.title( 'Change in soil C in  organic soil layer for all sites' )
+plt.title( 'C' )
 plt.suptitle('') # that's what you're after
 plt.show()
 data.boxplot(column='CN',by='site')
 title_boxplot = 'awesome title'
-plt.title( 'Change in soil C:N in  organic soil layer for all sites' )
+plt.title( 'C:N' )
 plt.suptitle('') # that's what you're after
 plt.show()
 
-#redo figure 7
+#redo figure 8
 
 data.boxplot(column='pH')
 title_boxplot = 'awesome title'
-plt.title( 'pH in  upper soil layer across all sites' )
-plt.suptitle('') # that's what you're after
+plt.title( 'pH' )
+plt.suptitle('') 
 plt.plot(1,5.3, marker = 'o',markersize = 20, markerfacecolor='red')
 plt.show()
 
 
 data.boxplot(column='N')
 title_boxplot = 'awesome title'
-plt.title( 'N in  upper soil layer across all sites' )
+plt.title( 'N' )
 plt.suptitle('') # that's what you're after
 plt.plot(1,0.3,marker = 'o',markersize = 20, markerfacecolor='red')
 plt.show()
 
 data.boxplot(column='C')
 title_boxplot = 'awesome title'
-plt.title( ' C in  upper soil layer across all sites' )
+plt.title( ' C' )
 plt.suptitle('') # that's what you're after
 plt.plot(1,4.8,marker = 'o',markersize = 20, markerfacecolor='red')
 plt.show()
 
 data.boxplot(column='CN')
 title_boxplot = 'awesome title'
-plt.title( 'C:N in  upper soil layer across all sites' )
+plt.title( 'C:N' )
 plt.suptitle('') # that's what you're after
 plt.plot(1,15.1,marker = 'o',markersize = 20, markerfacecolor='red')
 plt.show()
 
 data.boxplot(column='wt_g')
 title_boxplot = 'awesome title'
-plt.title( 'Weight of fixed volume of soil in  upper soil layer across all sites' )
+plt.title( 'Weight' )
 plt.suptitle('') 
 plt.plot(1,114.6,marker = 'o',markersize = 20, markerfacecolor='red')# that's what you're after
 plt.show()
+
+######################

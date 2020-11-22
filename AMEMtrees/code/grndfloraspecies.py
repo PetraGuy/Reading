@@ -7,6 +7,8 @@ Get list of herbaceous species in Bunce
 
 #There is need to see what herbs are in grnd flora, might to to remove some
 #like brambles
+#this tidies up the groundflora
+
 import pandas as pd
 
 # get the two data files

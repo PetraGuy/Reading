@@ -64,7 +64,7 @@ emplots = filter(woods, shortcodes %in% em)
 #split by year and see how many plots in each wood
 
 #remove NVC and herb cover
-emplotssht = emplots[-c(5,11)]
+emplotssht = emplots[-c(7,14)]
 emwoodsyr1 = emplotssht%>%filter(Yr == 1)
 emwoodsyr2 = emplotssht%>%filter(Yr==2)
 

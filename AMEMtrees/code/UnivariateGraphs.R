@@ -1,23 +1,3 @@
-# try random resampling to get richness and other vars for sites which have
-#different number plots in
-#because I have deleted lost of plots - am, open etc, sites now no longer have
-#same number. Pick a number of plots to integrate over - say 5? then sum the cover, richness
-#etc over these 5. But for sites with more than 5 - rendomly resample and average
-
-#moving things up to site level, but need tolook at EM plots only,
-#coz AM shrub cover not imprtoant in AM plots
-#and consider how many  plots in each wood - wont be the same
-
-#THIS IS THE SCRIPT I AM USING FOR THE PLOTS - NOT RANDOMSAMPLE 3 OR 4
-#this for alpha, repeated randomsampleabund for abundance
-
-
-#redoing this because when you get the richness over the 5 plots, then richness is unique plants,
-#lba is sum, pH is ave, SOM is ave, am is sum
-#This script collects LBA SOM etc and AMand EM plots if you change getsites function.
-#if inv level = 1 
-
-#This is funal version for multivvariateplot
 
 setwd("C:/dev/code/Reading/AMEMtrees/Code")
 library(dplyr)
@@ -43,7 +23,7 @@ devtools::install_github("jacob-long/jtools")
 
 
 #get data
-alldata = read.csv('../data/all2datasens1.csv')
+alldata = read.csv('../data/all2datasens3.csv') #from collatingdata.py
 herbs = read.csv('../data/herbs.csv')
 
 #response to pH is quadratic, therefore transform pH to pH2
@@ -101,12 +81,13 @@ getmode <- function(v) {
 }
 
 ##########################################
-#returns list of all sites for yr, invlevel where numplots per site >=5
+#retrns list of all sites for yr, invlevel where numplots per site >=5
 #change to am/emplots depending what you want
 #change to alpha or inv level filter depending what you want
 #with invlevel = 1 and alpha > invlevel, it means select by richness not invasion and alpha>1 means just take all sites. 
-getsites = function(yr, invlevel){
-  sites = amplots%>%filter(alpha >invlevel)%>%filter(Yr==yr)%>%group_by(Site)%>%group_split() 
+getsites = function(yr, invlevel,mycor){
+  mycor = get(mycor)
+  sites = mycor%>%filter(alpha >invlevel)%>%filter(Yr==yr)%>%group_by(Site)%>%group_split() 
   reducedsites = compact(lapply(sites, deletesites))
   return(reducedsites)
   
@@ -128,7 +109,6 @@ getrichness = function(plots,site,yr){
 }
 
 ##############################################
-
 
 getaves = function(asite,yr){
   testdf = data.frame(matrix(ncol = 5,nrow=100))
@@ -167,43 +147,57 @@ getsamples = function(siteslist,yr){
   df = df[!apply(df, 1, function(x) all(x == 0)), ]
   return(df)
 }
-#############################################
-#notice, not scaled for just richness with prop am because propam already relative and between 0-1
 
-getfits = function(data){
-  #lose most of the columns, change here for how many vars required
-  trimmed = data[-c(6)] #this leaves richnes, in and am
-  scaled =  as.data.frame(apply(trimmed[-1],2, rescale))         #do we need to scale when is%cover?
-  modeldata = as.data.frame(cbind(data$alpha,scaled))
-  names(modeldata)[names(modeldata) == "data$alpha"] <- "alpha" # had to revert to base R for rename 
-  fit = lm(alpha ~ . ,modeldata, na.action = na.exclude)      #because dplyr rename stopped working
-  summary(fit)$adj.r.squared
-  return(fit)
-}
-###############################################
 
-runall = function(yr,invlevel){
-  sitelist = getsites(yr,invlevel)
+getdata = function(yr,invlevel,plotype){
+  sitelist = getsites(yr,invlevel,plotype)
   samples = getsamples(sitelist,yr)
-  fits = getfits(samples)
-  return(fits)
+  return(samples)
 }
-#############################################
-#to change between em and am plots, change getsites
-#quantiles for am 1,11,17,24,61. But only 2 sites at >24 so cant model
-#quantiles for em: 1,7,12,19,65
-model1 = runall(1,1) # input year and invasion level, this can be alpha if you change getsites
-model2 = runall(2,1)
-model3 = runall(1,1)
-model4 = runall(2,1)
 
 
 
+ggplotRegression <- function (fit,label) {
+  
+  
+  ggplot(fit$model, aes_string(x = names(fit$model)[2], y = names(fit$model)[1])) + 
+    geom_point() +
+    stat_smooth(method = "lm", col = "red") +
+    labs(title = paste("R2 = ",signif(summary(fit)$r.squared, 2),
+                       "Intercept =",signif(fit$coef[[1]],2 ),
+                       " Slope =",signif(fit$coef[[2]], 2),
+                       " P =",signif(round(summary(fit)$coef[2,4], 3),2)),
+         subtitle = label) +
+         xlab ("proportion AM trees and shrubs" )+
+         ylab("herb richness") +
+    theme(plot.title = element_text(size = 14))
+        
+}
 
-plot_summs(model1, model2, ci_level = 0.9, 
-           model.names = c('Yr1 Emplots','Yr2 EMplots'))+
-  ggtitle("Site richness regression coefficients in EM plots for both survey years")+
-  theme_grey(base_size = 18)+
-  #theme(axis.text.y = element_blank(),
-  #axis.ticks.y = element_blank())+
-   xlab('standardised regression coefficient')
+
+#run each of these to get the data for each plot type and each yea  r
+am1data = getdata(1,1,"amplots")
+am2data = getdata(2,1,"amplots")
+em1data = getdata(1,2,"emplots")
+em2data = getdata(2,1,"emplots")
+
+
+#run these to do linear plots of richness in EM/AM plots year 1 and 2
+data = as.data.frame(am1data[,c(1,5)])
+fit =  lm(alpha ~ am ,data, na.action = na.exclude) 
+gam1 = ggplotRegression(fit,"AM plots year 1")
+
+data = as.data.frame(am2data[,c(1,5)])
+fit =  lm(alpha ~ am ,data, na.action = na.exclude) 
+gam2 = ggplotRegression(fit,"AM plots year 2")
+
+data = as.data.frame(em1data[,c(1,5)])
+fit =  lm(alpha ~ am ,data, na.action = na.exclude) 
+gem1 = ggplotRegression(fit,"EM plots year 1")
+
+data = as.data.frame(em2data[,c(1,5)])
+fit =  lm(alpha ~ am ,data, na.action = na.exclude) 
+gem2 = ggplotRegression(fit,"EM plots year 2")
+
+library(gridExtra)
+grid.arrange(gam1,gam2,gem1,gem2,ncol = 2)
